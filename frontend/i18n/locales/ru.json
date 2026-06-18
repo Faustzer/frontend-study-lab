@@ -1,0 +1,62 @@
+{
+  "common": {
+    "dashboard": "Главная",
+    "level": "Уровень",
+    "xp": "XP",
+    "done": "Завершено",
+    "modules": "модулей",
+    "progress": "Прогресс",
+    "categories": "Категории",
+    "complete": "Завершить модуль",
+    "completed": "Завершено",
+    "xpToLevelUp": "XP до следующего уровня",
+    "practiceFirst": "Практика прежде теории",
+    "tagline": "Минимум теории — максимум практики. Решай задачи, получай XP, прокачивай уровень.",
+    "language": "Язык"
+  },
+  "difficulty": {
+    "easy": "Лёгкий",
+    "medium": "Средний",
+    "hard": "Сложный"
+  },
+  "categories": {
+    "js-core": {
+      "title": "JavaScript Core",
+      "description": "Фундаментальные концепции JS: замыкания, контекст, функции высшего порядка"
+    },
+    "js-dom": {
+      "title": "JavaScript DOM",
+      "description": "Работа с DOM: события, навигация, манипуляции"
+    },
+    "js-async": {
+      "title": "JavaScript Async",
+      "description": "Асинхронность: Event Loop, Promises, async/await"
+    },
+    "css": {
+      "title": "CSS",
+      "description": "Стилизация: flexbox, grid, анимации, адаптивность"
+    },
+    "scss": {
+      "title": "SCSS",
+      "description": "Продвинутые стили: миксины, функции, архитектура"
+    },
+    "typescript": {
+      "title": "TypeScript",
+      "description": "Типы, generics, utility types, продвинутые паттерны"
+    },
+    "vue": {
+      "title": "Vue 3",
+      "description": "Компоненты, реактивность, composables, жизненный цикл"
+    },
+    "nuxt": {
+      "title": "Nuxt",
+      "description": "SSR, маршрутизация, серверные роуты, модули"
+    }
+  },
+  "auth": {
+    "login": "Войти",
+    "logout": "Выйти",
+    "profile": "Профиль",
+    "loginWith": "Войти через {provider}"
+  }
+}

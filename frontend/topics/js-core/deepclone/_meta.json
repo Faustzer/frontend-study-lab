@@ -1,0 +1,8 @@
+{
+  "title": "Deep Clone",
+  "description": "Глубокое клонирование объектов без ссылок",
+  "difficulty": "medium",
+  "xp": 60,
+  "order": 4,
+  "tags": ["objects", "recursion", "immutability"]
+}

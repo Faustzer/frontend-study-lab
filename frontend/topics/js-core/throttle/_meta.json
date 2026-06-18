@@ -1,0 +1,8 @@
+{
+  "title": "Throttle",
+  "description": "Ограничение частоты вызова функции",
+  "difficulty": "easy",
+  "xp": 30,
+  "order": 7,
+  "tags": ["timing", "optimization", "events"]
+}

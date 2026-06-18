@@ -1,0 +1,8 @@
+{
+  "title": "Memoize",
+  "description": "Кэширование результатов дорогих вычислений",
+  "difficulty": "easy",
+  "xp": 30,
+  "order": 6,
+  "tags": ["cache", "optimization", "closures"]
+}

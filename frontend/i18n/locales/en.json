@@ -1,0 +1,62 @@
+{
+  "common": {
+    "dashboard": "Dashboard",
+    "level": "Level",
+    "xp": "XP",
+    "done": "Done",
+    "modules": "modules",
+    "progress": "Progress",
+    "categories": "Categories",
+    "complete": "Complete module",
+    "completed": "Completed",
+    "xpToLevelUp": "XP to next level",
+    "practiceFirst": "Practice-first learning",
+    "tagline": "Minimum theory — maximum practice. Solve tasks, earn XP, level up.",
+    "language": "Language"
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard"
+  },
+  "categories": {
+    "js-core": {
+      "title": "JavaScript Core",
+      "description": "Fundamental JS concepts: closures, context, higher-order functions"
+    },
+    "js-dom": {
+      "title": "JavaScript DOM",
+      "description": "DOM manipulation: events, navigation, traversal"
+    },
+    "js-async": {
+      "title": "JavaScript Async",
+      "description": "Async patterns: Event Loop, Promises, async/await"
+    },
+    "css": {
+      "title": "CSS",
+      "description": "Styling: flexbox, grid, animations, responsive"
+    },
+    "scss": {
+      "title": "SCSS",
+      "description": "Advanced styles: mixins, functions, architecture"
+    },
+    "typescript": {
+      "title": "TypeScript",
+      "description": "Types, generics, utility types, advanced patterns"
+    },
+    "vue": {
+      "title": "Vue 3",
+      "description": "Components, reactivity, composables, lifecycle"
+    },
+    "nuxt": {
+      "title": "Nuxt",
+      "description": "SSR, routing, server routes, modules"
+    }
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "profile": "Profile",
+    "loginWith": "Log in with {provider}"
+  }
+}

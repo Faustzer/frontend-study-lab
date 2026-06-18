@@ -1,0 +1,17 @@
+// Global styles entry point
+// Import this file in main.ts to load all styles
+
+// Base
+@use 'variables';
+@use 'mixins';
+@use 'fonts';
+@use 'base';
+@use 'demo-page';
+
+// Pages
+@use 'pages/app';
+@use 'pages/home';
+@use 'pages/topic';
+
+// Components
+@use 'components/language-switcher';

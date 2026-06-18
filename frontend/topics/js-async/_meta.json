@@ -1,0 +1,6 @@
+{
+  "title": "JavaScript Async",
+  "description": "Асинхронность: Event Loop, Promises, async/await",
+  "icon": "⚡",
+  "order": 3
+}

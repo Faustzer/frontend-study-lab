@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug TS: Current File",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/.debug-temp/${fileBasenameNoExtension}.js",
+      "preLaunchTask": "build-debug-current-ts",
+      "outFiles": [
+        "${workspaceFolder}/.vscode/.debug-temp/**/*.js"
+      ],
+      "sourceMaps": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Run TSX: Current File (--noEmit)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "tsx",
+      "runtimeArgs": [
+        "${file}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
+  ]
+}

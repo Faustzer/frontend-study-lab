@@ -1,0 +1,8 @@
+{
+  "title": "Deep Equal",
+  "description": "Глубокое сравнение объектов и массивов",
+  "difficulty": "medium",
+  "xp": 60,
+  "order": 5,
+  "tags": ["objects", "comparison", "recursion"]
+}

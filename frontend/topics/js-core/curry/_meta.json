@@ -1,0 +1,8 @@
+{
+  "title": "Curry",
+  "description": "Каррирование — разбиение функции на цепочку вызовов",
+  "difficulty": "medium",
+  "xp": 60,
+  "order": 2,
+  "tags": ["functions", "closures", "fp"]
+}

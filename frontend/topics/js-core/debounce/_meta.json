@@ -1,0 +1,8 @@
+{
+  "title": "Debounce",
+  "description": "Отсрочка выполнения до паузы в вызовах",
+  "difficulty": "easy",
+  "xp": 30,
+  "order": 3,
+  "tags": ["timing", "optimization", "events"]
+}

@@ -1,0 +1,55 @@
+@use 'variables' as *;
+
+// ===== Responsive breakpoints =====
+@mixin mobile {
+  @media (max-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $breakpoint-md) and (max-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+// ===== Card glass effect =====
+@mixin glass-card {
+  background: $color-bg-card;
+  border: 1px solid $color-border;
+  border-radius: $radius-xl;
+  box-shadow: 0 20px 60px rgba(28, 31, 22, 0.08);
+}
+
+// ===== Difficulty badge =====
+@mixin difficulty-badge($color) {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba($color, 0.12);
+  color: $color;
+}
+
+// ===== Scrollbar =====
+@mixin thin-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(28, 31, 22, 0.15);
+    border-radius: 999px;
+  }
+}

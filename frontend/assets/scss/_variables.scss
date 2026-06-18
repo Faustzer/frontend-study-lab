@@ -1,0 +1,40 @@
+// ===== Breakpoints =====
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+
+// ===== Colors =====
+$color-bg: #f7f2e8;
+$color-bg-card: rgba(255, 255, 255, 0.7);
+$color-text: #1c1f16;
+$color-text-muted: rgba(28, 31, 22, 0.6);
+$color-text-faint: rgba(28, 31, 22, 0.35);
+$color-accent: #d96b2b;
+$color-accent-light: rgba(217, 107, 43, 0.12);
+$color-success: #4caf50;
+$color-border: rgba(28, 31, 22, 0.08);
+
+// ===== Difficulty colors =====
+$color-easy: #4caf50;
+$color-medium: #e8a317;
+$color-hard: #e53935;
+
+// ===== Spacing =====
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+
+// ===== Border radius =====
+$radius-sm: 8px;
+$radius-md: 14px;
+$radius-lg: 20px;
+$radius-xl: 28px;
+
+// ===== Sidebar =====
+$sidebar-width: 280px;
+
+// ===== Mobile header =====
+$mobile-header-height: 56px;

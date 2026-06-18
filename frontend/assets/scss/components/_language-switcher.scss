@@ -1,0 +1,33 @@
+@use '../variables' as *;
+
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-text-muted;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+
+  &:hover {
+    background: rgba(28, 31, 22, 0.04);
+    border-color: rgba(28, 31, 22, 0.12);
+  }
+}
+
+.lang-icon {
+  font-size: 14px;
+}
+
+.lang-code {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}

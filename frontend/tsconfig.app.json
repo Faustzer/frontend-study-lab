@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.vue",
+    "**/*.d.ts",
+    "**/*.json",
+    "vite.config.ts"
+  ],
+  "exclude": [
+    "**/__tests__/*",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
+}

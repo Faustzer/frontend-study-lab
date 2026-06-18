@@ -1,0 +1,8 @@
+{
+  "title": "Bind",
+  "description": "Привязка контекста this через bind, call, apply",
+  "difficulty": "medium",
+  "xp": 60,
+  "order": 1,
+  "tags": ["this", "context", "functions"]
+}
