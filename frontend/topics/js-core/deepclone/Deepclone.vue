@@ -9,55 +9,51 @@
       </div>
       <h2>deepClone</h2>
       <p class="demo-copy">
-        Deep clone создаёт новый объект со своими вложенными объектами и массивами.
-        Поэтому изменения в copy не протекают обратно в original.
+        {{ $t('modules.deepClone.description') }}
       </p>
 
       <div class="actions">
         <button type="button" @click="changeCopy">
-          Изменить только copy
+          {{ $t('modules.deepClone.changeBtn') }}
         </button>
         <button class="secondary" type="button" @click="resetCopy">
-          Сбросить copy
+          {{ $t('modules.deepClone.resetBtn') }}
         </button>
       </div>
 
       <div class="comparison">
         <article class="object-card">
-          <h3>Original</h3>
+          <h3>{{ $t('modules.deepClone.originalLabel') }}</h3>
           <pre>{{ formatValue(original) }}</pre>
         </article>
         <article class="object-card">
-          <h3>Copy</h3>
+          <h3>{{ $t('modules.deepClone.copyLabel') }}</h3>
           <pre>{{ formatValue(copy) }}</pre>
         </article>
       </div>
 
       <div class="ref-checks">
         <div class="ref-item">
-          <span class="muted">original === copy</span>
+          <span class="muted">{{ $t('modules.deepClone.refCheckSame') }}</span>
           <strong>{{ original === copy }}</strong>
         </div>
         <div class="ref-item">
-          <span class="muted">address same ref</span>
+          <span class="muted">{{ $t('modules.deepClone.refCheckAddress') }}</span>
           <strong>{{ original.address === copy.address }}</strong>
         </div>
         <div class="ref-item">
-          <span class="muted">skills same ref</span>
+          <span class="muted">{{ $t('modules.deepClone.refCheckSkills') }}</span>
           <strong>{{ original.skills === copy.skills }}</strong>
         </div>
       </div>
 
       <button class="complete-btn" :class="{ completed }" @click="onComplete">
-        <span v-if="completed">✓ Завершено</span>
-        <span v-else>Завершить модуль → +60 XP</span>
+        <span v-if="completed">{{ $t('modules.deepClone.completedBtn') }}</span>
+        <span v-else>{{ $t('modules.deepClone.completeBtn', { xp: 60 }) }}</span>
       </button>
     </div>
   </section>
 </template>
-<style lang="scss">
-@use '@/assets/scss/pages/topic' as *;
-</style>
 
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -98,3 +94,6 @@ function formatValue(val: any) {
 }
 </script>
 
+<style lang="scss">
+@use '@/assets/scss/pages/topic' as *;
+</style>

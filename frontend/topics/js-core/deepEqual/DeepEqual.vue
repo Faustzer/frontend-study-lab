@@ -9,37 +9,34 @@
       </div>
       <h2>deepEqual</h2>
       <p class="demo-copy">
-        Deep equal проверяет, равны ли два значения по содержимому, а не только по ссылке.
+        {{ $t('modules.deepEqual.description') }}
       </p>
 
       <div class="lesson-grid">
         <article class="lesson-card">
-          <h3>Left</h3>
+          <h3>{{ $t('modules.deepEqual.leftLabel') }}</h3>
           <pre>{{ leftValue }}</pre>
         </article>
         <article class="lesson-card">
-          <h3>Right</h3>
+          <h3>{{ $t('modules.deepEqual.rightLabel') }}</h3>
           <pre>{{ rightValue }}</pre>
         </article>
       </div>
 
       <div class="result-panel">
-        <span class="muted">deepEqual(left, right)</span>
+        <span class="muted">{{ $t('modules.deepEqual.resultLabel') }}</span>
         <strong>{{ result }}</strong>
       </div>
 
       <pre class="code">{{ codeExample }}</pre>
 
       <button class="complete-btn" :class="{ completed }" @click="onComplete">
-        <span v-if="completed">✓ Завершено</span>
-        <span v-else>Завершить модуль → +60 XP</span>
+        <span v-if="completed">{{ $t('modules.deepEqual.completedBtn') }}</span>
+        <span v-else>{{ $t('modules.deepEqual.completeBtn', { xp: 60 }) }}</span>
       </button>
     </div>
   </section>
 </template>
-<style lang="scss">
-@use '@/assets/scss/pages/topic' as *;
-</style>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
@@ -72,3 +69,6 @@ const codeExample = [
 ].join('\n')
 </script>
 
+<style lang="scss">
+@use '@/assets/scss/pages/topic' as *;
+</style>

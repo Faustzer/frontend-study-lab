@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TopicCategory } from '@/types/types'
+import type { TopicCategory } from '@/types/topic'
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useTopics } from '@/composables/useTopics'

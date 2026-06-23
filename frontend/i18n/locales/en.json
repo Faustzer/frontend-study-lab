@@ -58,5 +58,83 @@
     "logout": "Log out",
     "profile": "Profile",
     "loginWith": "Log in with {provider}"
+  },
+  "modules": {
+    "bind": {
+      "title": "bind",
+      "description": "bind creates a new function with this pre-bound to a given object. In the example below, a regular function takes a name from this and receives a greeting as an argument.",
+      "contextLabel": "Context",
+      "resultLabel": "Result",
+      "completeBtn": "Complete module → +{xp} XP",
+      "completedBtn": "✓ Completed"
+    },
+    "curry": {
+      "title": "curry",
+      "description": "Currying transforms a function with multiple arguments into a chain of functions, each remembering part of the arguments and waiting for the rest.",
+      "beforeLabel": "Before curry",
+      "beforeText": "A regular function receives all arguments in one call:",
+      "afterLabel": "After curry",
+      "afterText": "A curried function can receive arguments step by step:",
+      "step1": "Passed endpoint",
+      "step2": "Got a new function",
+      "step3": "Passed query",
+      "step4": "Passed format",
+      "resultLabel": "Call result",
+      "completeBtn": "Complete module → +{xp} XP",
+      "completedBtn": "✓ Completed"
+    },
+    "debounce": {
+      "title": "debounce",
+      "description": "The function delays execution until the stream of calls stops for a specified time.",
+      "inputLabel": "Enter text",
+      "inputPlaceholder": "Type quickly",
+      "currentValue": "Current value",
+      "debouncedValue": "Debounced value",
+      "callCount": "Times triggered",
+      "completeBtn": "Complete module → +{xp} XP",
+      "completedBtn": "✓ Completed"
+    },
+    "deepClone": {
+      "title": "deepClone",
+      "description": "Deep clone creates a new object with its own nested objects and arrays. So changes to copy don't flow back to original.",
+      "changeBtn": "Change only copy",
+      "resetBtn": "Reset copy",
+      "originalLabel": "Original",
+      "copyLabel": "Copy",
+      "refCheckSame": "original === copy",
+      "refCheckAddress": "address same ref",
+      "refCheckSkills": "skills same ref",
+      "completeBtn": "Complete module → +{xp} XP",
+      "completedBtn": "✓ Completed"
+    },
+    "deepEqual": {
+      "title": "deepEqual",
+      "description": "Deep equal checks whether two values are equal by content, not just by reference.",
+      "leftLabel": "Left",
+      "rightLabel": "Right",
+      "resultLabel": "deepEqual(left, right)",
+      "completeBtn": "Complete module → +{xp} XP",
+      "completedBtn": "✓ Completed"
+    },
+    "memoize": {
+      "title": "memoize",
+      "description": "Memoize caches function results by arguments. When called again with the same arguments, the result is taken from the cache without recomputation.",
+      "inputLabel": "Input",
+      "resultLabel": "Result",
+      "calcCountLabel": "How many times actually computed",
+      "completeBtn": "Complete module → +{xp} XP",
+      "completedBtn": "✓ Completed"
+    },
+    "throttle": {
+      "title": "throttle",
+      "description": "A technique to limit function calls. Throttle guarantees the function executes no more than once per specified time interval.",
+      "inputLabel": "Enter text",
+      "inputPlaceholder": "Type quickly",
+      "currentValue": "Current value",
+      "throttledValue": "Throttled value",
+      "callCount": "Times triggered",
+      "completeBtn": "Complete module → +{xp} XP",
+      "completedBtn": "✓ Completed"
+    }
   }
 }

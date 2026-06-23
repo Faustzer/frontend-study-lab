@@ -2,6 +2,8 @@ export interface TopicItem {
   slug: string
   title: string
   description: string
+  i18nTitleKey: string
+  i18nDescriptionKey: string
   category: string
   order: number
   difficulty: 'easy' | 'medium' | 'hard'
@@ -15,28 +17,11 @@ export interface TopicCategory {
   slug: string
   title: string
   description: string
+  i18nTitleKey: string
+  i18nDescriptionKey: string
   icon: string
   order: number
   items: TopicItem[]
-}
-
-export interface UserProgress {
-  level: number
-  xp: number
-  xpToNextLevel: number
-  completedModules: string[]
-  completedChallenges: Record<string, string[]>
-  lastActive: string
-}
-
-export interface Challenge {
-  id: string
-  title: string
-  description: string
-  starterCode: string
-  solution: string
-  tests: string[]
-  xpReward: number
 }
 
 /** @deprecated use TopicCategory instead */

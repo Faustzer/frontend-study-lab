@@ -4,3 +4,4 @@ coverage
 .vscode/.debug-temp/
 .DS_Store
 *.tsbuildinfo
+.env

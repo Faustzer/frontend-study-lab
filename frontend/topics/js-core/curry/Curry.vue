@@ -9,19 +9,18 @@
       </div>
       <h2>curry</h2>
       <p class="demo-copy">
-        Currying превращает функцию с несколькими аргументами в цепочку функций,
-        каждая из которых запоминает часть аргументов и ждёт остальные.
+        {{ $t('modules.curry.description') }}
       </p>
 
       <div class="lesson-grid">
         <article class="lesson-card">
-          <h3>До curry</h3>
-          <p>Обычная функция получает все аргументы за один вызов:</p>
+          <h3>{{ $t('modules.curry.beforeLabel') }}</h3>
+          <p>{{ $t('modules.curry.beforeText') }}</p>
           <pre>buildUrl('/users', { page: 1 }, 'json')</pre>
         </article>
         <article class="lesson-card">
-          <h3>После curry</h3>
-          <p>Каррированная функция может получать аргументы по шагам:</p>
+          <h3>{{ $t('modules.curry.afterLabel') }}</h3>
+          <p>{{ $t('modules.curry.afterText') }}</p>
           <pre>curriedBuildUrl('/users')({ page: 1 })('json')</pre>
         </article>
       </div>
@@ -29,41 +28,38 @@
       <div class="flow">
         <div class="flow-step">
           <span class="step-number">1</span>
-          <strong>Передали endpoint</strong>
+          <strong>{{ $t('modules.curry.step1') }}</strong>
           <code>'/users'</code>
         </div>
         <div class="flow-step">
           <span class="step-number">2</span>
-          <strong>Получили новую функцию</strong>
+          <strong>{{ $t('modules.curry.step2') }}</strong>
           <code>(query) => ...</code>
         </div>
         <div class="flow-step">
           <span class="step-number">3</span>
-          <strong>Передали query</strong>
+          <strong>{{ $t('modules.curry.step3') }}</strong>
           <code>{ page: 1 }</code>
         </div>
         <div class="flow-step">
           <span class="step-number">4</span>
-          <strong>Передали format</strong>
+          <strong>{{ $t('modules.curry.step4') }}</strong>
           <code>'json'</code>
         </div>
       </div>
 
       <div class="result-panel">
-        <span class="muted">Результат вызова</span>
+        <span class="muted">{{ $t('modules.curry.resultLabel') }}</span>
         <strong>{{ url }}</strong>
       </div>
 
       <button class="complete-btn" :class="{ completed }" @click="onComplete">
-        <span v-if="completed">✓ Завершено</span>
-        <span v-else>Завершить модуль → +60 XP</span>
+        <span v-if="completed">{{ $t('modules.curry.completedBtn') }}</span>
+        <span v-else>{{ $t('modules.curry.completeBtn', { xp: 60 }) }}</span>
       </button>
     </div>
   </section>
 </template>
-<style lang="scss">
-@use '@/assets/scss/pages/topic' as *;
-</style>
 
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -88,3 +84,6 @@ const buildUrl = curry((endpoint: string, query: Record<string, number>, format:
 const url = buildUrl('/users')({ page: 1 })('json')
 </script>
 
+<style lang="scss">
+@use '@/assets/scss/pages/topic' as *;
+</style>

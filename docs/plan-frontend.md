@@ -124,10 +124,21 @@
 
 ### 2.1 Unit Tests (Vitest)
 
-- [ ] Install `vitest`, `@vue/test-utils`, `jsdom`
-- [ ] Configure `vitest.config.ts`
+- [x] Install `vitest`, `@vue/test-utils`, `jsdom`
+- [x] Configure `vitest.config.ts` with `@/` alias resolution
+- [x] Create `frontend/tests/useTopics.test.ts` — 28 tests covering:
+  - [x] `buildCategory` — happy path + defaults
+  - [x] `buildRoutes` — route generation + empty categories
+  - [x] `slugify` — PascalCase conversion
+  - [x] `categoryFromPath` — path extraction + invalid paths
+  - [x] `humanize` — kebab/snake/PascalCase
+  - [x] `extractMeta` — `{ default }` format + direct + null/undefined
+  - [x] `calculateXp` — explicit xp + difficulty + defaults
+  - [x] `buildTopicItem` — full meta + empty meta
+  - [x] `createFallbackCategory` — fallback creation
+  - [x] `sortCategories` — sort order + items sort
+- [x] Create `frontend/mocks/topics.ts` — mock data for tests
 - [ ] Create `frontend/stores/__tests__/progress.test.ts`
-- [ ] Create `frontend/composables/__tests__/useTopics.test.ts`
 - [ ] Create `frontend/components/ui/__tests__/UiButton.test.ts`
 - [ ] Create `frontend/components/ui/__tests__/UiProgressBar.test.ts`
 - [ ] Target: 80% coverage on stores and composables

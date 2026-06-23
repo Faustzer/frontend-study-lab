@@ -24,12 +24,10 @@
 
     <aside class="sidebar" :class="{ open: sidebarOpen }">
       <div class="sidebar-header">
-        <div class="sidebar-top">
-          <p class="eyebrow">
-            {{ $t('common.practiceFirst') }}
-          </p>
-          <h1>Frontend Study Lab</h1>
-        </div>
+        <!-- <div class="sidebar-profile">
+          avatar
+          nickname
+        </div> -->
         <LanguageSwitcher />
         <div class="user-stats">
           <div class="stat">

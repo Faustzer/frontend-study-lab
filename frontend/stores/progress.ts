@@ -1,4 +1,4 @@
-import type { UserProgress } from '@/types/types'
+import type { UserProgress } from '@/types/topic'
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 

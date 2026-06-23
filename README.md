@@ -39,8 +39,12 @@ frontend/
 │ └── LanguageSwitcher.vue
 ├── composables/
 │ └── useTopics.ts # Auto-scans topics/ → routes + navigation
+├── helpers/
+│   └── useTopics.ts # Pure helper functions (slugify, buildCategory, etc.)
 ├── i18n/ # Translations (en.json, ru.json)
-├── mocks/ # MSW handlers for API mocking
+├── mocks/
+│   ├── topics.ts # Test mock data (mockTopicItems, mockTopicCategories)
+│   └── msw/ # MSW handlers for API mocking
 ├── pages/
 │ └── HomePage.vue # Dashboard with stats and categories
 ├── stores/
@@ -54,7 +58,9 @@ frontend/
 │ ├── typescript/ # 🚧 placeholder
 │ ├── vue/ # 🚧 placeholder
 │ └── nuxt/ # 🚧 placeholder
-├── types/ # TypeScript interfaces
+├── types/ # TypeScript interfaces (topic.ts, meta.ts, progress.ts)
+├── tests/ # Vitest unit tests
+│   └── useTopics.test.ts # Tests for helpers and composables
 ├── App.vue # Sidebar layout + mobile menu
 ├── main.ts # App entry point
 ├── router.ts # Dynamic route generation
@@ -124,6 +130,16 @@ npm run test         # Vitest (watch mode)
 npm run test:run     # Vitest (single run)
 ```
 
+## Testing
+
+Tests use Vitest with jsdom environment. Mock data lives in `frontend/mocks/`.
+
+```bash
+npm run test:run     # Run all tests once
+npm run test         # Watch mode
+npx vitest run frontend/tests/useTopics.test.ts  # Single file
+```
+
 ## Development
 
 Want to contribute? See [CONTRIBUTING.md](./CONTRIBUTING.md) for:
@@ -154,7 +170,7 @@ npm run dev
 - [x] Husky + lint-staged
 - [x] Dynamic topic routing
 - [x] Gamification (XP, levels, progress)
-- [ ] Unit tests (Vitest)
+- [x] Unit tests (Vitest) — helpers/useTopics.ts covered
 - [ ] E2E tests (Playwright)
 - [ ] Backend (FastAPI + PostgreSQL)
 - [ ] OAuth2 (Google, Twitch, Discord)
