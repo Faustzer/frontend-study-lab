@@ -1,4 +1,5 @@
-import type { TopicCategory, TopicItem } from '@/types/topic.ts'
+import type { TopicCategory, TopicItem } from '@/types/topic'
+import type { CategoryMeta, ModuleMeta } from '@/types/meta'
 import type { RouteRecordRaw } from 'vue-router'
 import {
   buildCategory,
@@ -11,7 +12,7 @@ import {
   humanize,
   slugify,
   sortCategories,
-} from '@/helpers/useTopics.ts'
+} from '@/helpers/useTopics'
 import { mockTopicCategories, mockTopicItems } from '@/mocks/topics'
 import { describe, expect, it } from 'vitest'
 
@@ -278,8 +279,177 @@ describe('sortCategories', () => {
 })
 
 /**
- * useTopics tests
+ * composable useTopics tests
+ *
+ * Note: import.meta.glob cannot be tested directly in jsdom,
+ * so we test the composable's public API by calling the underlying helpers
+ * with the same data that import.meta.glob would provide.
  */
-// describe('useTopics', () => {
-//   //
-// })
+
+describe('useTopics composable (integration via helpers)', () => {
+  // Simulate what import.meta.glob would return
+  const modulePages = {
+    'frontend/topics/js-core/bind/Bind.vue': () => Promise.resolve({ default: {} }),
+    'frontend/topics/js-core/curry/Curry.vue': () => Promise.resolve({ default: {} }),
+  }
+
+  const categoryMetas = {
+    'frontend/topics/js-core/_meta.json': {
+      default: {
+        title: 'JavaScript Core',
+        description: 'Core JS concepts',
+        icon: '🟨',
+        order: 1,
+      },
+    },
+    'frontend/topics/js-async/_meta.json': {
+      default: {
+        title: 'JavaScript Async',
+        description: 'Async patterns',
+        icon: '⚡',
+        order: 2,
+      },
+    },
+  }
+
+  const moduleMetas = {
+    'frontend/topics/js-core/bind/_meta.json': {
+      default: {
+        title: 'Bind',
+        description: 'Function.prototype.bind',
+        difficulty: 'easy',
+        xp: 50,
+        order: 1,
+        tags: ['functions'],
+      },
+    },
+    'frontend/topics/js-core/curry/_meta.json': {
+      default: {
+        title: 'Curry',
+        description: 'Currying functions',
+        difficulty: 'medium',
+        xp: 60,
+        order: 2,
+        tags: ['functions', 'fp'],
+      },
+    },
+  }
+
+  function simulateUseTopics() {
+    const catMap = new Map<string, TopicCategory>()
+
+    // Build categories from meta files
+    for (const [path, mod] of Object.entries(categoryMetas)) {
+      const parts = path.split('/')
+      const catSlug = parts[parts.length - 2]
+      const meta = extractMeta<CategoryMeta>(mod)
+      catMap.set(catSlug, buildCategory(catSlug, meta))
+    }
+
+    // Add modules to categories
+    for (const path of Object.keys(modulePages)) {
+      const catSlug = categoryFromPath(path)
+      const folderPath = path.replace(/\/[^/]+\.vue$/, '')
+      const metaPath = `${folderPath}/_meta.json`
+      const meta = extractMeta<ModuleMeta>(moduleMetas[metaPath])
+      const item = buildTopicItem(path, meta, modulePages[path] as TopicItem['component'])
+
+      const existingCat = catMap.get(catSlug)
+      if (existingCat) {
+        existingCat.items.push(item)
+      }
+      else {
+        catMap.set(catSlug, createFallbackCategory(catSlug, item))
+      }
+    }
+
+    const categories = sortCategories([...catMap.values()])
+    const routes = buildRoutes(categories)
+    const allModules = categories.flatMap(c => c.items)
+
+    return { categories, routes, allModules }
+  }
+
+  it('returns categories with items', () => {
+    const { categories } = simulateUseTopics()
+
+    expect(categories).toHaveLength(2)
+    expect(categories[0].slug).toBe('js-core')
+    expect(categories[0].items).toHaveLength(2)
+    expect(categories[1].slug).toBe('js-async')
+    expect(categories[1].items).toHaveLength(0)
+  })
+
+  it('returns routes for all modules', () => {
+    const { routes } = simulateUseTopics()
+
+    expect(routes).toHaveLength(2)
+    expect(routes[0].path).toBe('/js-core/bind')
+    expect(routes[1].path).toBe('/js-core/curry')
+  })
+
+  it('returns all modules flattened', () => {
+    const { allModules } = simulateUseTopics()
+
+    expect(allModules).toHaveLength(2)
+    expect(allModules[0].slug).toBe('bind')
+    expect(allModules[1].slug).toBe('curry')
+  })
+
+  it('sorts categories by order', () => {
+    const { categories } = simulateUseTopics()
+
+    expect(categories[0].order).toBeLessThanOrEqual(categories[1].order)
+  })
+
+  it('sorts items within categories by order', () => {
+    const { categories } = simulateUseTopics()
+
+    const jsCore = categories.find(c => c.slug === 'js-core')!
+    expect(jsCore.items[0].order).toBeLessThanOrEqual(jsCore.items[1].order)
+  })
+
+  it('creates fallback category for unknown category', () => {
+    // Simulate a module with no category meta
+    const orphanPath = 'topics/unknown-category/SomeModule.vue'
+    const orphanComponent = () => Promise.resolve({ default: {} })
+
+    const catMap = new Map<string, TopicCategory>()
+    const catSlug = categoryFromPath(orphanPath)
+    const meta = extractMeta<ModuleMeta>(undefined)
+    const item = buildTopicItem(orphanPath, meta, orphanComponent)
+
+    catMap.set(catSlug, createFallbackCategory(catSlug, item))
+    const categories = sortCategories([...catMap.values()])
+
+    expect(categories).toHaveLength(1)
+    expect(categories[0].slug).toBe('unknown-category')
+    expect(categories[0].title).toBe('Unknown category')
+    expect(categories[0].items).toHaveLength(1)
+  })
+
+  it('handles empty module pages', () => {
+    // Simulate no modules at all
+    const emptyCatMetas = {
+      'frontend/topics/empty-cat/_meta.json': {
+        default: { title: 'Empty Category', icon: '📭', order: 5 },
+      },
+    }
+
+    const catMap = new Map<string, TopicCategory>()
+    for (const [path, mod] of Object.entries(emptyCatMetas)) {
+      const parts = path.split('/')
+      const catSlug = parts[parts.length - 2]
+      const meta = extractMeta<CategoryMeta>(mod)
+      catMap.set(catSlug, buildCategory(catSlug, meta))
+    }
+
+    const categories = sortCategories([...catMap.values()])
+    const routes = buildRoutes(categories)
+
+    expect(categories).toHaveLength(1)
+    expect(categories[0].slug).toBe('empty-cat')
+    expect(categories[0].items).toHaveLength(0)
+    expect(routes).toHaveLength(0)
+  })
+})

@@ -39,11 +39,11 @@
     "vue-tsc": "^2.2.10"
   },
   "lint-staged": {
-    "*.{ts,tsx,vue}": [
-      "eslint --fix"
+    "frontend/**/*.{ts,tsx,vue}": [
+      "eslint --config frontend/eslint.config.mjs --fix"
     ],
-    "*.{md,json,scss,css}": [
-      "eslint --fix"
+    "frontend/**/*.{md,json,scss,css}": [
+      "eslint --config frontend/eslint.config.mjs --fix"
     ]
   }
 }
