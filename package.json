@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.13.2",
+    "@iconify/vue": "^5.0.1",
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^22.15.3",
     "@vitejs/plugin-vue": "^6.0.7",
@@ -44,6 +45,11 @@
     ],
     "frontend/**/*.{md,json,scss,css}": [
       "eslint --config frontend/eslint.config.mjs --fix"
+    ]
+  },
+  "msw": {
+    "workerDirectory": [
+      "frontend/public"
     ]
   }
 }

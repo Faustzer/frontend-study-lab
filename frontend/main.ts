@@ -7,7 +7,6 @@ import { router } from './router'
 import i18n from './i18n'
 import '@/assets/scss/index.scss'
 
-
 async function bootstrap() {
   if (import.meta.env.DEV) {
     const { worker } = await import('./mocks/browser')
@@ -25,7 +24,5 @@ async function bootstrap() {
 
   app.mount('#app')
 }
-
-bootstrap()
 
 bootstrap()

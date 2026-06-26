@@ -5,7 +5,7 @@
         <p class="demo-label">
           JavaScript Core
         </p>
-        <span class="difficulty difficulty-easy">Easy • +30 XP</span>
+        <UiBadge difficulty="easy" :xp="30" />
       </div>
       <h2>throttle</h2>
       <p class="demo-copy">
@@ -37,12 +37,11 @@
         </div>
       </div>
 
-      <pre class="code">throttle(fn, 1000)</pre>
+      <CodeBlock language="javascript">
+        throttle(fn, 1000)
+      </CodeBlock>
 
-      <button class="complete-btn" :class="{ completed }" @click="onComplete">
-        <span v-if="completed">{{ $t('modules.throttle.completedBtn') }}</span>
-        <span v-else>{{ $t('modules.throttle.completeBtn', { xp: 30 }) }}</span>
-      </button>
+      <CompleteButton module-slug="throttle" :xp-reward="30" />
     </div>
   </section>
 </template>
@@ -50,17 +49,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { throttle } from './throttle'
-import { useProgressStore } from '@/stores/progress'
-
-const progress = useProgressStore()
-const completed = ref(progress.isModuleCompleted('throttle'))
-
-function onComplete() {
-  if (completed.value)
-    return
-  progress.completeModule('throttle', 30)
-  completed.value = true
-}
+import CompleteButton from '@/components/topic/CompleteButton.vue'
+import CodeBlock from '@/components/ui/CodeBlock.vue'
+import UiBadge from '@/components/ui/UiBadge.vue'
 
 const input = ref('')
 const throttled = ref('')

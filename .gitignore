@@ -5,3 +5,6 @@ coverage
 .DS_Store
 *.tsbuildinfo
 .env
+
+# MSW auto-generated service worker
+**/mockServiceWorker.js

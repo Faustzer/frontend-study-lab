@@ -5,7 +5,7 @@
         <p class="demo-label">
           JavaScript Core
         </p>
-        <span class="difficulty difficulty-medium">Medium • +60 XP</span>
+        <UiBadge difficulty="medium" :xp="60" />
       </div>
       <h2>deepEqual</h2>
       <p class="demo-copy">
@@ -15,11 +15,15 @@
       <div class="lesson-grid">
         <article class="lesson-card">
           <h3>{{ $t('modules.deepEqual.leftLabel') }}</h3>
-          <pre>{{ leftValue }}</pre>
+          <CodeBlock language="code">
+            {{ leftValue }}
+          </CodeBlock>
         </article>
         <article class="lesson-card">
           <h3>{{ $t('modules.deepEqual.rightLabel') }}</h3>
-          <pre>{{ rightValue }}</pre>
+          <CodeBlock language="code">
+            {{ rightValue }}
+          </CodeBlock>
         </article>
       </div>
 
@@ -28,30 +32,21 @@
         <strong>{{ result }}</strong>
       </div>
 
-      <pre class="code">{{ codeExample }}</pre>
+      <CodeBlock language="javascript">
+        {{ codeExample }}
+      </CodeBlock>
 
-      <button class="complete-btn" :class="{ completed }" @click="onComplete">
-        <span v-if="completed">{{ $t('modules.deepEqual.completedBtn') }}</span>
-        <span v-else>{{ $t('modules.deepEqual.completeBtn', { xp: 60 }) }}</span>
-      </button>
+      <CompleteButton module-slug="deepEqual" :xp-reward="60" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useProgressStore } from '@/stores/progress'
+import { computed } from 'vue'
 import { deepEqual } from './deepEqual'
-
-const progress = useProgressStore()
-const completed = ref(progress.isModuleCompleted('deepEqual'))
-
-function onComplete() {
-  if (completed.value)
-    return
-  progress.completeModule('deepEqual', 60)
-  completed.value = true
-}
+import CompleteButton from '@/components/topic/CompleteButton.vue'
+import CodeBlock from '@/components/ui/CodeBlock.vue'
+import UiBadge from '@/components/ui/UiBadge.vue'
 
 const left = { user: 'Ann', skills: ['js', 'ts'] }
 const right = { user: 'Ann', skills: ['js', 'ts'] }

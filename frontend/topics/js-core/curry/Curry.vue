@@ -5,7 +5,7 @@
         <p class="demo-label">
           JavaScript Core
         </p>
-        <span class="difficulty difficulty-medium">Medium • +60 XP</span>
+        <UiBadge difficulty="medium" :xp="60" />
       </div>
       <h2>curry</h2>
       <p class="demo-copy">
@@ -16,12 +16,16 @@
         <article class="lesson-card">
           <h3>{{ $t('modules.curry.beforeLabel') }}</h3>
           <p>{{ $t('modules.curry.beforeText') }}</p>
-          <pre>buildUrl('/users', { page: 1 }, 'json')</pre>
+          <CodeBlock language="code">
+            buildUrl('/users', { page: 1 }, 'json')
+          </CodeBlock>
         </article>
         <article class="lesson-card">
           <h3>{{ $t('modules.curry.afterLabel') }}</h3>
           <p>{{ $t('modules.curry.afterText') }}</p>
-          <pre>curriedBuildUrl('/users')({ page: 1 })('json')</pre>
+          <CodeBlock language="code">
+            curriedBuildUrl('/users')({ page: 1 })('json')
+          </CodeBlock>
         </article>
       </div>
 
@@ -53,28 +57,16 @@
         <strong>{{ url }}</strong>
       </div>
 
-      <button class="complete-btn" :class="{ completed }" @click="onComplete">
-        <span v-if="completed">{{ $t('modules.curry.completedBtn') }}</span>
-        <span v-else>{{ $t('modules.curry.completeBtn', { xp: 60 }) }}</span>
-      </button>
+      <CompleteButton module-slug="curry" :xp-reward="60" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useProgressStore } from '@/stores/progress'
 import { curry } from './curry'
-
-const progress = useProgressStore()
-const completed = ref(progress.isModuleCompleted('curry'))
-
-function onComplete() {
-  if (completed.value)
-    return
-  progress.completeModule('curry', 60)
-  completed.value = true
-}
+import CompleteButton from '@/components/topic/CompleteButton.vue'
+import CodeBlock from '@/components/ui/CodeBlock.vue'
+import UiBadge from '@/components/ui/UiBadge.vue'
 
 const buildUrl = curry((endpoint: string, query: Record<string, number>, format: string) => {
   const params = new URLSearchParams(query as any).toString()

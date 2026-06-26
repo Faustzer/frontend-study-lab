@@ -5,7 +5,7 @@
         <p class="demo-label">
           JavaScript Core
         </p>
-        <span class="difficulty difficulty-medium">Medium • +60 XP</span>
+        <UiBadge difficulty="medium" :xp="60" />
       </div>
       <h2>bind</h2>
       <p class="demo-copy">
@@ -15,38 +15,33 @@
       <div class="lesson-grid">
         <article class="lesson-card">
           <h3>{{ $t('modules.bind.contextLabel') }}</h3>
-          <p>{{ user }}</p>
+          <CodeBlock language="code">
+            {{ user }}
+          </CodeBlock>
         </article>
         <article class="lesson-card">
           <h3>{{ $t('modules.bind.resultLabel') }}</h3>
-          <p>{{ result }}</p>
+          <CodeBlock language="code">
+            {{ result }}
+          </CodeBlock>
         </article>
       </div>
 
-      <pre class="code">{{ codeExample }}</pre>
+      <CodeBlock language="javascript">
+        {{ codeExample }}
+      </CodeBlock>
 
-      <button class="complete-btn" :class="{ completed }" @click="onComplete">
-        <span v-if="completed">{{ $t('modules.bind.completedBtn') }}</span>
-        <span v-else>{{ $t('modules.bind.completeBtn', { xp: 60 }) }}</span>
-      </button>
+      <CompleteButton module-slug="bind" :xp-reward="60" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { myBind } from './bind'
-import { useProgressStore } from '@/stores/progress'
-
-const progress = useProgressStore()
-const completed = ref(progress.isModuleCompleted('bind'))
-
-function onComplete() {
-  if (completed.value)
-    return
-  progress.completeModule('bind', 60)
-  completed.value = true
-}
+import CompleteButton from '@/components/topic/CompleteButton.vue'
+import CodeBlock from '@/components/ui/CodeBlock.vue'
+import UiBadge from '@/components/ui/UiBadge.vue'
 
 interface UserContext { name: string }
 

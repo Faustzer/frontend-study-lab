@@ -5,7 +5,7 @@
         <p class="demo-label">
           JavaScript Core
         </p>
-        <span class="difficulty difficulty-easy">Easy • +30 XP</span>
+        <UiBadge difficulty="easy" :xp="30" />
       </div>
       <h2>memoize</h2>
       <p class="demo-copy">
@@ -15,11 +15,15 @@
       <div class="lesson-grid">
         <article class="lesson-card">
           <h3>{{ $t('modules.memoize.inputLabel') }}</h3>
-          <p>{{ inputLabel }}</p>
+          <CodeBlock language="code">
+            {{ inputLabel }}
+          </CodeBlock>
         </article>
         <article class="lesson-card">
           <h3>{{ $t('modules.memoize.resultLabel') }}</h3>
-          <p>{{ result }}</p>
+          <CodeBlock language="code">
+            {{ result }}
+          </CodeBlock>
         </article>
       </div>
 
@@ -28,12 +32,11 @@
         <strong>{{ calculations }}</strong>
       </div>
 
-      <pre class="code">{{ codeExample }}</pre>
+      <CodeBlock language="javascript">
+        {{ codeExample }}
+      </CodeBlock>
 
-      <button class="complete-btn" :class="{ completed }" @click="onComplete">
-        <span v-if="completed">{{ $t('modules.memoize.completedBtn') }}</span>
-        <span v-else>{{ $t('modules.memoize.completeBtn', { xp: 30 }) }}</span>
-      </button>
+      <CompleteButton module-slug="memoize" :xp-reward="30" />
     </div>
   </section>
 </template>
@@ -41,17 +44,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { memoize } from './memoize'
-import { useProgressStore } from '@/stores/progress'
-
-const progress = useProgressStore()
-const completed = ref(progress.isModuleCompleted('memoize'))
-
-function onComplete() {
-  if (completed.value)
-    return
-  progress.completeModule('memoize', 30)
-  completed.value = true
-}
+import CompleteButton from '@/components/topic/CompleteButton.vue'
+import CodeBlock from '@/components/ui/CodeBlock.vue'
+import UiBadge from '@/components/ui/UiBadge.vue'
 
 const calculations = ref(0)
 

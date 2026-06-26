@@ -26,7 +26,7 @@
   - [x] `frontend/i18n/locales/ru.json` — Russian translations
 - [x] Create `frontend/components/LanguageSwitcher.vue` — toggle EN/RU button
 - [x] Wrap UI strings in `$t()` calls (App.vue, HomePage.vue)
-- [ ] Add `$t()` to all topic pages (7 js-core modules)
+- [x] Add `$t()` to all topic pages (7 js-core modules)
 
 ### 1.2b Pinia Persisted State
 
@@ -55,36 +55,38 @@
   - [x] Keep localStorage as fallback (persistedstate)
   - [x] Add `syncWithBackend()` method for future backend sync
   - [x] Add `isOnline` state
-- [ ] Create `stores/auth.ts`:
-  - [ ] `user: User | null`
-  - [ ] `isAuthenticated: boolean`
-  - [ ] `login(provider)`, `logout()`, `fetchProfile()` methods
-  - [ ] Persist to localStorage
-- [ ] Create `stores/ui.ts`:
-  - [ ] `sidebarCollapsed: Record<string, boolean>>`
-  - [ ] `language: 'en' | 'ru'`
-  - [ ] `theme: 'light' | 'dark'` (future)
+- [x] Create `stores/auth.ts`:
+  - [x] `user: User | null`
+  - [x] `isAuthenticated: boolean`
+  - [x] `login(provider)`, `logout()`, `fetchProfile()` methods
+  - [x] Persist to localStorage
+- [x] Create `stores/ui.ts`:
+  - [x] `sidebarCollapsed: Record<string, boolean>` (`Set<string>`)
+  - [x] `language: 'en' | 'ru'` (delegated to i18n module)
+  - [x] `theme: 'light' | 'dark'` (prepared for future use)
 
 ### 1.5 UI Components Library
 
-- [ ] Create `frontend/components/ui/` directory
-  - [ ] `UiButton.vue` — reusable button (variants: primary, secondary, ghost)
-  - [ ] `UiCard.vue` — card container
-  - [ ] `UiBadge.vue` — difficulty badge (easy/medium/hard)
-  - [ ] `UiProgressBar.vue` — XP progress bar
-  - [ ] `UiIcon.vue` — icon wrapper
-  - [ ] `UiSpinner.vue` — loading spinner
-  - [ ] `UiModal.vue` — modal dialog
-- [ ] Create `frontend/components/layout/` directory
-  - [ ] `AppSidebar.vue` — extract from App.vue
-  - [ ] `AppHeader.vue` — mobile header
+- [x] Create `frontend/components/ui/` directory
+  - [x] `UiButton.vue` — reusable button (variants: primary, secondary, ghost)
+  - [x] `UiCard.vue` — card container
+  - [x] `CodeBlock.vue` — code block with language highlighting
+  - [x] `UiBadge.vue` — difficulty badge (easy/medium/hard)
+  - [x] `UiProgressBar.vue` — XP progress bar
+  - [x] `UiIcon.vue` — icon wrapper
+  - [x] `UiSpinner.vue` — loading spinner
+  - [x] `UiModal.vue` — modal dialog
+  - [x] `UiChip.vue` - chip (PRACTICE-FIRST LEARNING on main page)
+- [x] Create `frontend/components/layout/` directory
+  - [x] `AppSidebar.vue` — extract from App.vue
+  - [x] `AppHeader.vue` — mobile header
   - [ ] `AppFooter.vue` — footer (if needed)
 
 ### 1.6 Topic Pages Refactoring
 
 - [ ] Create `frontend/components/topic/TopicPage.vue` — reusable topic page layout
-- [ ] Create `frontend/components/topic/CompleteButton.vue` — "Complete module" button
-- [ ] Refactor all 7 js-core topics to use shared components
+- [x] Create `frontend/components/topic/CompleteButton.vue` — "Complete module" button
+- [x] Refactor all 7 js-core topics to use shared components
 - [x] Add difficulty badge to each topic page
 - [x] Add XP reward display to each topic page
 

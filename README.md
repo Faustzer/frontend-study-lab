@@ -36,9 +36,25 @@ frontend/
 │ └── auth.ts # Auth endpoints
 ├── assets/scss/ # Global styles (variables, mixins, demo-page)
 ├── components/
-│ └── LanguageSwitcher.vue
+│ ├── layout/
+│ │   ├── AppHeader.vue # Mobile header with burger and XP bar
+│ │   ├── AppSidebar.vue # Sidebar with navigation and categories
+│ │   └── AppOverlay.vue # Mobile sidebar overlay
+│ ├── topic/
+│   │   └── CompleteButton.vue # "Complete module" button
+│   ├── ui/
+│   │   ├── UiButton.vue # Reusable button (primary/secondary/ghost)
+│   │   ├── UiCard.vue # Card container with glass effect
+│   │   ├── UiBadge.vue # Difficulty badge (easy/medium/hard)
+│   │   ├── UiProgressBar.vue # XP progress bar
+│   │   ├── UiSpinner.vue # Loading spinner
+│   │   ├── UiModal.vue # Modal dialog
+│   │   ├── UiChip.vue # Chip/tag component
+│   │   ├── CodeBlock.vue # Code block with language highlighting
+│   │   └── UiIcon.vue # Icon wrapper (Iconify logos)
+│   └── LanguageSwitcher.vue # EN/RU language toggle
 ├── composables/
-│ └── useTopics.ts # Auto-scans topics/ → routes + navigation
+│   └── useTopics.ts # Auto-scans topics/ → routes + navigation
 ├── helpers/
 │   └── useTopics.ts # Pure helper functions (slugify, buildCategory, etc.)
 ├── i18n/ # Translations (en.json, ru.json)
@@ -46,22 +62,24 @@ frontend/
 │   ├── topics.ts # Test mock data (mockTopicItems, mockTopicCategories)
 │   └── msw/ # MSW handlers for API mocking
 ├── pages/
-│ └── HomePage.vue # Dashboard with stats and categories
+│   └── HomePage.vue # Dashboard with stats and categories
 ├── stores/
-│ └── progress.ts # Pinia store (XP, levels, completed modules)
+│   ├── progress.ts # Pinia store (XP, levels, completed modules)
+│   ├── auth.ts # Auth store (user, token)
+│   └── ui.ts # UI store (sidebar, theme)
 ├── topics/ # Learning modules
-│ ├── js-core/ # ✅ 7 modules (bind, curry, debounce, etc.)
-│ ├── js-dom/ # 🚧 placeholder
-│ ├── js-async/ # 🚧 placeholder
-│ ├── css/ # 🚧 placeholder
-│ ├── scss/ # 🚧 placeholder
-│ ├── typescript/ # 🚧 placeholder
-│ ├── vue/ # 🚧 placeholder
-│ └── nuxt/ # 🚧 placeholder
+│   ├── js-core/ # ✅ 7 modules (bind, curry, debounce, etc.)
+│   ├── js-dom/ # 🚧 placeholder
+│   ├── js-async/ # 🚧 placeholder
+│   ├── css/ # 🚧 placeholder
+│   ├── scss/ # 🚧 placeholder
+│   ├── typescript/ # 🚧 placeholder
+│   ├── vue/ # 🚧 placeholder
+│   └── nuxt/ # 🚧 placeholder
 ├── types/ # TypeScript interfaces (topic.ts, meta.ts, progress.ts)
 ├── tests/ # Vitest unit tests
 │   └── useTopics.test.ts # Tests for helpers and composables
-├── App.vue # Sidebar layout + mobile menu
+├── App.vue # Root layout (header + sidebar + content)
 ├── main.ts # App entry point
 ├── router.ts # Dynamic route generation
 └── index.html # Entry point
@@ -171,6 +189,10 @@ npm run dev
 - [x] Dynamic topic routing
 - [x] Gamification (XP, levels, progress)
 - [x] Unit tests (Vitest) — helpers/useTopics.ts covered
+- [x] UI component library (UiButton, UiCard, UiBadge, UiProgressBar, UiSpinner, UiModal, UiChip, CodeBlock, UiIcon)
+- [x] Layout components (AppHeader, AppSidebar, AppOverlay)
+- [x] Topic components (CompleteButton)
+- [x] Code blocks with overflow handling
 - [ ] E2E tests (Playwright)
 - [ ] Backend (FastAPI + PostgreSQL)
 - [ ] OAuth2 (Google, Twitch, Discord)

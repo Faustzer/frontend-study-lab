@@ -94,8 +94,8 @@
       "completeBtn": "Complete module → +{xp} XP",
       "completedBtn": "✓ Completed"
     },
-    "deepClone": {
-      "title": "deepClone",
+    "deepclone": {
+      "title": "deepclone",
       "description": "Deep clone creates a new object with its own nested objects and arrays. So changes to copy don't flow back to original.",
       "changeBtn": "Change only copy",
       "resetBtn": "Reset copy",
