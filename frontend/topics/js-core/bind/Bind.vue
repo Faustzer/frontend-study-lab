@@ -46,7 +46,7 @@ const result = computed(() => boundSayHello('Hello'))
 
 const codeExample = [
   'function sayHello(this: UserContext, greeting: string) {',
-  '  return `${greeting}, ${this.name}`',
+  '  return `${greeting}, ${this.name}`', // eslint-disable-line no-template-curly-in-string
   '}',
   '',
   'const bound = myBind(sayHello, { name: "Ann" })',
