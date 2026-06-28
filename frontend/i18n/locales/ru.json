@@ -12,7 +12,8 @@
     "xpToLevelUp": "XP до следующего уровня",
     "practiceFirst": "Практика прежде теории",
     "tagline": "Минимум теории — максимум практики. Решай задачи, получай XP, прокачивай уровень.",
-    "language": "Язык"
+    "language": "Язык",
+    "toggleTheme": "Переключить тему"
   },
   "difficulty": {
     "easy": "Лёгкий",
@@ -57,7 +58,25 @@
     "login": "Войти",
     "logout": "Выйти",
     "profile": "Профиль",
-    "loginWith": "Войти через {provider}"
+    "loginWith": "Войти через {provider}",
+    "callbackLoading": "Выполняется вход...",
+    "callbackSuccess": "Вход выполнен!",
+    "callbackError": "Не удалось войти. Попробуйте снова.",
+    "callbackRetry": "На главную",
+    "modalTitle": "Войдите в аккаунт",
+    "modalWarning": "Без входа прогресс сохраняется только в браузере. Если вы очистите localStorage — всё пропадёт. Войдите, чтобы прогресс хранился на сервере и синхронизировался между устройствами.",
+    "modalSkip": "Продолжить без входа"
+  },
+  "profile": {
+    "title": "Профиль",
+    "modulesCompleted": "Завершено",
+    "completedModules": "Завершённые модули",
+    "noModules": "Пока нет завершённых модулей",
+    "provider": {
+      "google": "Google",
+      "twitch": "Twitch",
+      "discord": "Discord"
+    }
   },
   "modules": {
     "bind": {

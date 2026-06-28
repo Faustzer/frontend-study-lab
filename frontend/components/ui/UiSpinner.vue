@@ -25,7 +25,7 @@ withDefaults(defineProps<UiSpinnerProps>(), {
   &__circle {
     display: block;
     border-radius: 50%;
-    border: 2px solid rgba($color-accent, 0.2);
+    border: 2px solid color-mix(in srgb, $color-accent 20%, transparent);
     border-top-color: $color-accent;
     animation: ui-spinner-rotate 0.6s linear infinite;
   }

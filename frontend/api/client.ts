@@ -7,6 +7,7 @@ function getBaseUrl(): string {
 class ApiClient {
   baseUrl: string
   private token: string | null = null
+  private onUnauthorized: (() => void) | null = null
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl
@@ -14,6 +15,14 @@ class ApiClient {
 
   setToken(token: string | null) {
     this.token = token
+  }
+
+  /**
+   * Register a callback for 401 Unauthorized responses.
+   * Used to clear session and redirect to login when the token expires.
+   */
+  setOnUnauthorized(callback: () => void) {
+    this.onUnauthorized = callback
   }
 
   private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -35,6 +44,12 @@ class ApiClient {
         message: response.statusText,
         status: response.status,
       }
+
+      // Handle 401 — token expired or invalid
+      if (response.status === 401 && this.onUnauthorized) {
+        this.onUnauthorized()
+      }
+
       throw error
     }
 

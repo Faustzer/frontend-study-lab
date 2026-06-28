@@ -174,25 +174,25 @@
 
 ### 3.1 OAuth2 Flow
 
-- [ ] Create `frontend/components/auth/AuthButton.vue` — login button per provider
-- [ ] Create `frontend/pages/AuthCallback.vue` — OAuth callback handler
-- [ ] Update `stores/auth.ts`:
-  - [ ] `login(provider)` → redirect to backend OAuth endpoint
-  - [ ] Handle callback → extract token → store in Pinia
-  - [ ] `logout()` → clear token → redirect to home
-  - [ ] `fetchProfile()` → GET /api/auth/me
-- [ ] Create `frontend/composables/useAuthGuard.ts` — route guard for protected routes
-- [ ] Add auth middleware to router
+- [x] Create `frontend/components/auth/AuthButton.vue` — login button per provider
+- [x] Create `frontend/pages/AuthCallback.vue` — OAuth callback handler
+- [x] Update `stores/auth.ts`:
+  - [x] `login(provider)` → redirect to backend OAuth endpoint (with CSRF state)
+  - [x] Handle callback → extract token → store in Pinia (`handleCallback()`)
+  - [x] `logout()` → call backend + clear token → redirect to home
+  - [x] `fetchProfile()` → GET /api/auth/me (via api client)
+- [x] Create `frontend/composables/useAuthGuard.ts` — route guard for protected routes
+- [x] Add auth middleware to router
 
 ### 3.2 User Profile
 
-- [ ] Create `frontend/pages/ProfilePage.vue`
-  - [ ] Display user avatar, name, email
-  - [ ] Show level, XP, progress stats
-  - [ ] Show completed modules list
-  - [ ] Logout button
-- [ ] Create `frontend/components/profile/UserCard.vue`
-- [ ] Create `frontend/components/profile/ProgressStats.vue`
+- [x] Create `frontend/pages/ProfilePage.vue`
+  - [x] Display user avatar, name, email
+  - [x] Show level, XP, progress stats
+  - [x] Show completed modules list
+  - [x] Logout button
+- [x] Create `frontend/components/profile/UserCard.vue`
+- [x] Create `frontend/components/profile/ProgressStats.vue`
 
 ### 3.3 Backend Sync
 
@@ -200,9 +200,9 @@
   - [ ] On login: fetch progress from backend → merge with local
   - [ ] On module complete: POST to backend → update local on success
   - [ ] Handle offline mode: queue changes → sync when online
-- [ ] Add request interceptor to `frontend/api/client.ts`:
-  - [ ] Attach JWT token to all requests
-  - [ ] Handle 401 → redirect to login
+- [x] Add request interceptor to `frontend/api/client.ts`:
+  - [x] Attach JWT token to all requests
+  - [x] Handle 401 → redirect to login
 
 ---
 
@@ -210,25 +210,25 @@
 
 ### 4.1 UI/UX Improvements
 
-- [ ] Add dark mode toggle
-- [ ] Add animations (page transitions, XP gain animation)
-- [ ] Add toast notifications (success/error messages)
+- [x] Add dark mode toggle
+- [x] Add animations (page transitions, XP gain animation)
+- [x] Add toast notifications (success/error messages)
 - [ ] Improve mobile responsiveness
 - [ ] Add keyboard navigation support
 - [ ] Add loading skeletons
 
 ### 4.2 Performance
 
-- [ ] Lazy load topic pages (dynamic imports)
-- [ ] Optimize bundle size (code splitting)
+- [x] Lazy load topic pages (dynamic imports)
+- [x] Optimize bundle size (code splitting)
 - [ ] Add service worker for offline support (future)
 
 ### 4.3 CI/CD (GitHub Actions)
 
-- [ ] Create `.github/workflows/ci.yml`:
-  - [ ] Lint check
-  - [ ] Type check (vue-tsc)
-  - [ ] Unit tests
-  - [ ] Build check
+- [x] Create `.github/workflows/ci.yml`:
+  - [x] Lint check
+  - [x] Type check (vue-tsc)
+  - [x] Unit tests
+  - [x] Build check
 - [ ] Create `.github/workflows/deploy.yml`:
   - [ ] Deploy frontend to Railway on push to main

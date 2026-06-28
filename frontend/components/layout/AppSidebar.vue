@@ -1,10 +1,20 @@
 <template>
   <aside class="sidebar" :class="{ open: ui.mobileSidebarOpen }">
     <div class="sidebar-header">
-      <div class="logo">
-        <img src="@/assets/images/logo.svg" alt="Fsl" height="36">
+      <div class="header-actions">
+        <nav class="nav">
+          <RouterLink class="nav-link" :class="{ active: currentPath === '/' }" to="/" @click="ui.closeMobileSidebar()">
+            <div class="logo-wrapper">
+              <img src="@/assets/images/logo.svg" alt="Fsl" height="24">
+              {{ t('common.dashboard') }}
+            </div>
+          </RouterLink>
+        </nav>
+        <button class="theme-toggle" :title="t('common.toggleTheme')" @click="ui.toggleTheme()">
+          {{ ui.theme === 'dark' ? '☀️' : '🌙' }}
+        </button>
+        <LanguageSwitcher />
       </div>
-      <LanguageSwitcher />
       <div class="user-stats">
         <div class="stat">
           <span class="stat-label">{{ t('common.level') }}</span>
@@ -22,11 +32,22 @@
       <UiProgressBar :value="xpPercent" />
     </div>
 
-    <nav class="nav">
-      <RouterLink class="nav-link" :class="{ active: currentPath === '/' }" to="/" @click="ui.closeMobileSidebar()">
-        🏠 {{ t('common.dashboard') }}
-      </RouterLink>
-    </nav>
+    <div class="auth-section">
+      <template v-if="auth.isAuthenticated">
+        <RouterLink class="auth-user-link" to="/profile" @click="ui.closeMobileSidebar()">
+          <img v-if="auth.userAvatar" :src="auth.userAvatar" :alt="auth.userDisplayName" class="auth-avatar">
+          <span class="auth-name">{{ auth.userDisplayName }}</span>
+        </RouterLink>
+        <button class="auth-logout" @click="handleLogout">
+          {{ t('auth.logout') }}
+        </button>
+      </template>
+      <template v-else>
+        <button class="auth-login" @click="ui.openAuthModal()">
+          {{ t('auth.login') }}
+        </button>
+      </template>
+    </div>
 
     <div class="categories">
       <section
@@ -58,17 +79,20 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import UiProgressBar from '@/components/ui/UiProgressBar.vue'
 import { useTopics } from '@/composables/useTopics'
+import { useAuthStore } from '@/stores/auth'
 import { useProgressStore } from '@/stores/progress'
 import { useUiStore } from '@/stores/ui'
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const { categories, allModules } = useTopics()
+const auth = useAuthStore()
 const progress = useProgressStore()
 const ui = useUiStore()
 
@@ -81,5 +105,10 @@ const totalModules = computed(() => allModules.value.length)
 
 function isCompleted(slug: string) {
   return progress.isModuleCompleted(slug)
+}
+
+async function handleLogout() {
+  await auth.logout()
+  router.push({ name: 'home' })
 }
 </script>

@@ -13,6 +13,7 @@
 import { computed } from 'vue'
 import { useProgressStore } from '@/stores/progress'
 import { useI18n } from 'vue-i18n'
+import { useToast } from '@/composables/useToast'
 
 interface Props {
   moduleSlug: string
@@ -22,13 +23,16 @@ interface Props {
 const props = defineProps<Props>()
 const progress = useProgressStore()
 const { t } = useI18n()
+const toast = useToast()
 
 const completed = computed(() => progress.isModuleCompleted(props.moduleSlug))
 
 function onComplete() {
-  if (completed.value)
+  if (completed.value) {
     return
+  }
   progress.completeModule(props.moduleSlug, props.xpReward)
+  toast.success(`+${props.xpReward} XP!`)
 }
 </script>
 
@@ -52,7 +56,7 @@ function onComplete() {
   transition: all 0.2s ease;
 
   &:hover:not(.completed) {
-    background: darken($color-accent, 8%);
+    background: color-mix(in srgb, $color-accent 85%, black);
     transform: translateY(-1px);
   }
 

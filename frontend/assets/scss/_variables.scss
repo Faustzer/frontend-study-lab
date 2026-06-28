@@ -4,16 +4,17 @@ $breakpoint-md: 768px;
 $breakpoint-lg: 1024px;
 $breakpoint-xl: 1280px;
 
-// ===== Colors =====
-$color-bg: #f7f2e8;
-$color-bg-card: rgba(255, 255, 255, 0.7);
-$color-text: #1c1f16;
-$color-text-muted: rgba(28, 31, 22, 0.6);
-$color-text-faint: rgba(28, 31, 22, 0.35);
-$color-accent: #d96b2b;
-$color-accent-light: rgba(217, 107, 43, 0.12);
-$color-success: #4caf50;
-$color-border: rgba(28, 31, 22, 0.08);
+// ===== Colors (CSS custom properties for dark mode support) =====
+$color-bg: var(--color-bg);
+$color-bg-card: var(--color-bg-card);
+$color-text: var(--color-text);
+$color-text-muted: var(--color-text-muted);
+$color-text-faint: var(--color-text-faint);
+$color-accent: var(--color-accent);
+$color-accent-light: var(--color-accent-light);
+$color-success: var(--color-success);
+$color-border: var(--color-border);
+$color-bg-code: var(--color-bg-code);
 
 // ===== Difficulty colors =====
 $color-easy: #4caf50;

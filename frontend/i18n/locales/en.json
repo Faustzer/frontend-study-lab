@@ -12,7 +12,8 @@
     "xpToLevelUp": "XP to next level",
     "practiceFirst": "Practice-first learning",
     "tagline": "Minimum theory — maximum practice. Solve tasks, earn XP, level up.",
-    "language": "Language"
+    "language": "Language",
+    "toggleTheme": "Toggle theme"
   },
   "difficulty": {
     "easy": "Easy",
@@ -57,7 +58,25 @@
     "login": "Log in",
     "logout": "Log out",
     "profile": "Profile",
-    "loginWith": "Log in with {provider}"
+    "loginWith": "Log in with {provider}",
+    "callbackLoading": "Signing in...",
+    "callbackSuccess": "Signed in!",
+    "callbackError": "Sign-in failed. Please try again.",
+    "callbackRetry": "Go home",
+    "modalTitle": "Sign in to your account",
+    "modalWarning": "Without signing in, your progress is only saved in the browser. If you clear localStorage — everything will be lost. Sign in to keep your progress on the server and sync it across devices.",
+    "modalSkip": "Continue without signing in"
+  },
+  "profile": {
+    "title": "Profile",
+    "modulesCompleted": "Completed",
+    "completedModules": "Completed Modules",
+    "noModules": "No completed modules yet",
+    "provider": {
+      "google": "Google",
+      "twitch": "Twitch",
+      "discord": "Discord"
+    }
   },
   "modules": {
     "bind": {

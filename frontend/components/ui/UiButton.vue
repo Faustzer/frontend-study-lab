@@ -51,7 +51,7 @@ withDefaults(defineProps<UiButtonProps>(), {
     color: white;
 
     &:hover:not(:disabled) {
-      background: darken($color-accent, 8%);
+      background: color-mix(in srgb, $color-accent 85%, black);
     }
   }
 
@@ -60,7 +60,7 @@ withDefaults(defineProps<UiButtonProps>(), {
     color: $color-accent;
 
     &:hover:not(:disabled) {
-      background: rgba($color-accent, 0.2);
+      background: color-mix(in srgb, $color-accent 20%, transparent);
     }
   }
 

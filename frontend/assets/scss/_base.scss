@@ -5,10 +5,84 @@
   font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
   line-height: 1.5;
   font-weight: 400;
-  color: #1c1f16;
+
+  // Light theme colors
+  --color-bg: #f7f2e8;
+  --color-bg-card: rgba(255, 255, 255, 0.7);
+  --color-text: #1c1f16;
+  --color-text-muted: rgba(28, 31, 22, 0.6);
+  --color-text-faint: rgba(28, 31, 22, 0.35);
+  --color-accent: #d96b2b;
+  --color-accent-light: rgba(217, 107, 43, 0.12);
+  --color-success: #4caf50;
+  --color-border: rgba(28, 31, 22, 0.08);
+  --color-bg-code: #eae5d9;
+
+  color: var(--color-text);
   background:
     radial-gradient(circle at top left, rgba(255, 208, 122, 0.45), transparent 24%),
     linear-gradient(135deg, #f7f2e8 0%, #f0ebe2 52%, #e6efe6 100%);
+}
+
+// Dark mode overrides
+html.dark {
+  color-scheme: dark;
+
+  // Dark theme colors
+  --color-bg: #1a1b16;
+  --color-bg-card: rgba(255, 255, 255, 0.06);
+  --color-text: #e8e4d9;
+  --color-text-muted: rgba(232, 228, 217, 0.55);
+  --color-text-faint: rgba(232, 228, 217, 0.3);
+  --color-accent: #e8843d;
+  --color-accent-light: rgba(232, 132, 61, 0.15);
+  --color-success: #66bb6a;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-bg-code: #2a2b24;
+
+  color: var(--color-text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 208, 122, 0.12), transparent 24%),
+    linear-gradient(135deg, #1a1b16 0%, #1e1f18 52%, #1a1e1a 100%);
+
+  .sidebar {
+    background: rgba(30, 31, 24, 0.85);
+    border-right-color: var(--color-border);
+  }
+
+  .mobile-header {
+    background: rgba(30, 31, 24, 0.9);
+    border-bottom-color: var(--color-border);
+  }
+
+  .stat {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .category-card {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+  }
+
+  .nav-link:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .nav-link.active {
+    background: var(--color-accent-light);
+  }
+
+  .topic-li a:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .ui-modal {
+    background: #1e1f18;
+  }
+
+  .ui-modal-overlay {
+    background: rgba(0, 0, 0, 0.7);
+  }
 }
 
 * {

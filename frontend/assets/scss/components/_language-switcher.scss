@@ -17,8 +17,8 @@
     border-color 0.15s;
 
   &:hover {
-    background: rgba(28, 31, 22, 0.04);
-    border-color: rgba(28, 31, 22, 0.12);
+    background: $color-bg-card;
+    border-color: $color-text-faint;
   }
 }
 

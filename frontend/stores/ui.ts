@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 
 const SIDEBAR_KEY = 'frontend-study-lab-collapsed'
 const THEME_KEY = 'frontend-study-lab-theme'
+const AUTH_MODAL_KEY = 'frontend-study-lab-auth-modal-shown'
 
 export type Theme = 'light' | 'dark'
 
@@ -30,6 +31,7 @@ export const useUiStore = defineStore('ui', () => {
   const collapsedCategories = ref<Set<string>>(loadCollapsed())
   const mobileSidebarOpen = ref(false)
   const theme = ref<Theme>(loadTheme())
+  const authModalOpen = ref(false)
 
   // Persist collapsed categories
   watch(collapsedCategories, (val) => {
@@ -76,10 +78,31 @@ export const useUiStore = defineStore('ui', () => {
     theme.value = theme.value === 'light' ? 'dark' : 'light'
   }
 
+  function openAuthModal() {
+    authModalOpen.value = true
+  }
+
+  function closeAuthModal() {
+    authModalOpen.value = false
+    try {
+      localStorage.setItem(AUTH_MODAL_KEY, '1')
+    }
+    catch { /* ignore */ }
+  }
+
+  function shouldShowAuthModal(): boolean {
+    try {
+      return localStorage.getItem(AUTH_MODAL_KEY) !== '1'
+    }
+    catch { /* ignore */ }
+    return true
+  }
+
   return {
     collapsedCategories,
     mobileSidebarOpen,
     theme,
+    authModalOpen,
     sidebarCollapsed,
     toggleCategory,
     isCategoryCollapsed,
@@ -88,5 +111,8 @@ export const useUiStore = defineStore('ui', () => {
     toggleMobileSidebar,
     setTheme,
     toggleTheme,
+    openAuthModal,
+    closeAuthModal,
+    shouldShowAuthModal,
   }
 })

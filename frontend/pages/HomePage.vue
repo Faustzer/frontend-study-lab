@@ -1,82 +1,88 @@
 <template>
-  <section class="dashboard">
+  <section class="home">
     <!-- Hero -->
-    <div class="hero">
-      <p class="badge">
+    <div class="home__hero">
+      <p class="home__badge">
         {{ $t('common.practiceFirst') }}
       </p>
-      <h2>Frontend Study Lab</h2>
-      <p class="lead">
+      <h2 class="home__title">
+        Frontend Study Lab
+      </h2>
+      <p class="home__lead">
         {{ $t('common.tagline') }}
       </p>
     </div>
 
     <!-- Stats row -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <span class="stat-icon">⚡</span>
-        <div class="stat-info">
-          <span class="stat-value">{{ level }}</span>
-          <span class="stat-label">{{ $t('common.level') }}</span>
+    <div class="home__stats">
+      <div class="home__stat">
+        <span class="home__stat-icon">⚡</span>
+        <div class="home__stat-info">
+          <span class="home__stat-value">{{ level }}</span>
+          <span class="home__stat-label">{{ $t('common.level') }}</span>
         </div>
       </div>
-      <div class="stat-card">
-        <span class="stat-icon">✨</span>
-        <div class="stat-info">
-          <span class="stat-value">{{ xp }}</span>
-          <span class="stat-label">{{ $t('common.xp') }}</span>
+      <div class="home__stat">
+        <span class="home__stat-icon">✨</span>
+        <div class="home__stat-info">
+          <span class="home__stat-value">{{ xp }}</span>
+          <span class="home__stat-label">{{ $t('common.xp') }}</span>
         </div>
       </div>
-      <div class="stat-card">
-        <span class="stat-icon">✅</span>
-        <div class="stat-info">
-          <span class="stat-value">{{ completedCount }}/{{ totalModules }}</span>
-          <span class="stat-label">{{ $t('common.modules') }}</span>
+      <div class="home__stat">
+        <span class="home__stat-icon">✅</span>
+        <div class="home__stat-info">
+          <span class="home__stat-value">{{ completedCount }}/{{ totalModules }}</span>
+          <span class="home__stat-label">{{ $t('common.modules') }}</span>
         </div>
       </div>
-      <div class="stat-card">
-        <span class="stat-icon">🔥</span>
-        <div class="stat-info">
-          <span class="stat-value">{{ overallPercent }}%</span>
-          <span class="stat-label">{{ $t('common.progress') }}</span>
+      <div class="home__stat">
+        <span class="home__stat-icon">🔥</span>
+        <div class="home__stat-info">
+          <span class="home__stat-value">{{ overallPercent }}%</span>
+          <span class="home__stat-label">{{ $t('common.progress') }}</span>
         </div>
       </div>
     </div>
 
     <!-- XP Progress bar -->
-    <div class="level-card">
-      <div class="level-header">
+    <div class="home__level">
+      <div class="home__level-header">
         <span>{{ $t('common.level') }} {{ level }}</span>
         <span>{{ $t('common.level') }} {{ level + 1 }}</span>
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill" :style="{ width: `${xpPercent}%` }" />
+      <div class="home__progress-bar">
+        <div class="home__progress-fill" :style="{ width: `${xpPercent}%` }" />
       </div>
-      <p class="progress-hint">
+      <p class="home__progress-hint">
         {{ xpToNext }} {{ $t('common.xpToLevelUp') }}
       </p>
     </div>
 
     <!-- Categories grid -->
-    <h3 class="section-title">
+    <h3 class="home__section-title">
       {{ $t('common.categories') }}
     </h3>
-    <div class="categories-grid">
+    <div class="home__categories">
       <RouterLink
         v-for="cat in categories" :key="cat.slug"
-        :to="cat.items.length ? `/${cat.slug}/${cat.items[0].slug}` : '/'" class="category-card"
+        :to="cat.items.length ? `/${cat.slug}/${cat.items[0].slug}` : '/'" class="home__category"
       >
-        <span class="cat-icon">{{ cat.icon }}</span>
-        <h4>{{ $t(`categories.${cat.slug}.title`) }}</h4>
-        <p>{{ $t(`categories.${cat.slug}.description`) }}</p>
-        <div class="cat-meta">
+        <span class="home__category-icon">{{ cat.icon }}</span>
+        <h4 class="home__category-title">
+          {{ $t(`categories.${cat.slug}.title`) }}
+        </h4>
+        <p class="home__category-desc">
+          {{ $t(`categories.${cat.slug}.description`) }}
+        </p>
+        <div class="home__category-meta">
           <span>{{ cat.items.length }} {{ $t('common.modules') }}</span>
-          <span v-if="getCategoryProgress(cat) > 0" class="cat-progress">
+          <span v-if="getCategoryProgress(cat) > 0" class="home__category-progress-text">
             {{ getCategoryProgress(cat) }}% done
           </span>
         </div>
-        <div class="cat-progress-bar">
-          <div class="cat-progress-fill" :style="{ width: `${getCategoryProgress(cat)}%` }" />
+        <div class="home__category-progress-bar">
+          <div class="home__category-progress-fill" :style="{ width: `${getCategoryProgress(cat)}%` }" />
         </div>
       </RouterLink>
     </div>

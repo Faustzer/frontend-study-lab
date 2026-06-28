@@ -19,8 +19,8 @@ withDefaults(defineProps<CodeBlockProps>(), {
 
 .code-block {
   margin-top: $space-md;
-  background: rgba(28, 31, 22, 0.04);
-  border: 1px solid rgba(28, 31, 22, 0.08);
+  background: $color-bg-code;
+  border: 1px solid $color-border;
   border-radius: $radius-md;
   overflow: hidden;
 
