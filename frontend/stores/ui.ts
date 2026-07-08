@@ -12,8 +12,7 @@ function loadCollapsed(): Set<string> {
     const raw = localStorage.getItem(SIDEBAR_KEY)
     if (raw)
       return new Set(JSON.parse(raw))
-  }
-  catch { /* ignore */ }
+  } catch { /* ignore */ }
   return new Set()
 }
 
@@ -22,8 +21,7 @@ function loadTheme(): Theme {
     const saved = localStorage.getItem(THEME_KEY)
     if (saved === 'light' || saved === 'dark')
       return saved
-  }
-  catch { /* ignore */ }
+  } catch { /* ignore */ }
   return 'light'
 }
 
@@ -48,8 +46,7 @@ export const useUiStore = defineStore('ui', () => {
   function toggleCategory(slug: string) {
     if (collapsedCategories.value.has(slug)) {
       collapsedCategories.value.delete(slug)
-    }
-    else {
+    } else {
       collapsedCategories.value.add(slug)
     }
   }
@@ -86,15 +83,13 @@ export const useUiStore = defineStore('ui', () => {
     authModalOpen.value = false
     try {
       localStorage.setItem(AUTH_MODAL_KEY, '1')
-    }
-    catch { /* ignore */ }
+    } catch { /* ignore */ }
   }
 
   function shouldShowAuthModal(): boolean {
     try {
       return localStorage.getItem(AUTH_MODAL_KEY) !== '1'
-    }
-    catch { /* ignore */ }
+    } catch { /* ignore */ }
     return true
   }
 

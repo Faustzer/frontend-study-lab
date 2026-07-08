@@ -357,8 +357,7 @@ describe('useTopics composable (integration via helpers)', () => {
       const existingCat = catMap.get(catSlug)
       if (existingCat) {
         existingCat.items.push(item)
-      }
-      else {
+      } else {
         catMap.set(catSlug, createFallbackCategory(catSlug, item))
       }
     }

@@ -1,9 +1,9 @@
 type Curry<Args extends unknown[], ReturnValue> = Args extends [infer FirstArg, ...infer RestArgs]
-  ? (arg: FirstArg) => Curry<RestArgs, ReturnValue>
+  ? (_arg: FirstArg) => Curry<RestArgs, ReturnValue>
   : ReturnValue
 
 export function curry<Args extends unknown[], ReturnValue>(
-  func: (...args: Args) => ReturnValue,
+  func: (..._args: Args) => ReturnValue,
 ): Curry<Args, ReturnValue> {
   function curried(...args: unknown[]): unknown {
     if (args.length >= func.length) {

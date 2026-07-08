@@ -22,8 +22,7 @@ function loadProgress(): UserProgress {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw)
       return JSON.parse(raw)
-  }
-  catch { /* ignore */ }
+  } catch { /* ignore */ }
   return defaultProgress()
 }
 
@@ -32,8 +31,7 @@ function loadQueue(): PendingCompletion[] {
     const raw = localStorage.getItem(QUEUE_KEY)
     if (raw)
       return JSON.parse(raw)
-  }
-  catch { /* ignore */ }
+  } catch { /* ignore */ }
   return []
 }
 
@@ -164,8 +162,7 @@ export const useProgressStore = defineStore('progress', () => {
       try {
         if (entry.type === 'module') {
           await progressApi.completeModule({ moduleSlug: entry.moduleSlug, xpReward: entry.xpReward })
-        }
-        else {
+        } else {
           await progressApi.completeChallenge({
             moduleSlug: entry.moduleSlug,
             challengeId: entry.challengeId,
@@ -173,8 +170,7 @@ export const useProgressStore = defineStore('progress', () => {
           })
         }
         pendingQueue.value.shift()
-      }
-      catch {
+      } catch {
         isOnline.value = false
         return false
       }
@@ -202,8 +198,7 @@ export const useProgressStore = defineStore('progress', () => {
       mergeRemoteProgress(remote)
       isOnline.value = true
       return true
-    }
-    catch {
+    } catch {
       isOnline.value = false
       return false
     }

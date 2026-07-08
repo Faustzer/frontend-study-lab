@@ -11,6 +11,7 @@ import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
  * ```
  */
 declare module 'vue-router' {
+  // eslint-disable-next-line unused-imports/no-unused-vars -- module augmentation, the name must match vue-router's
   interface RouteMeta {
     requiresAuth?: boolean
   }

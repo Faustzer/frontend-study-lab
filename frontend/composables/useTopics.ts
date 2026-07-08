@@ -60,8 +60,7 @@ export function useTopics() {
       const existingCat = catMap.get(catSlug)
       if (existingCat) {
         existingCat.items.push(item)
-      }
-      else {
+      } else {
         catMap.set(catSlug, createFallbackCategory(catSlug, item))
       }
     }

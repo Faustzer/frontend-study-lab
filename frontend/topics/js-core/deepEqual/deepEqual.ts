@@ -19,7 +19,7 @@ export function deepEqual(left: unknown, right: unknown): boolean {
   }
 
   return leftKeys.every((key) => {
-    return Object.prototype.hasOwnProperty.call(right, key)
+    return Object.hasOwn(right, key)
       && deepEqual(left[key], right[key])
   })
 }

@@ -11,8 +11,7 @@ function getSavedLocale(): Locale {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved === 'en' || saved === 'ru')
       return saved
-  }
-  catch { /* ignore */ }
+  } catch { /* ignore */ }
   return 'en'
 }
 

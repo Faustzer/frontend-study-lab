@@ -49,8 +49,7 @@ watchEffect(() => {
 onMounted(() => {
   if (auth.isAuthenticated) {
     void progress.syncWithBackend()
-  }
-  else if (ui.shouldShowAuthModal()) {
+  } else if (ui.shouldShowAuthModal()) {
     ui.openAuthModal()
   }
 })

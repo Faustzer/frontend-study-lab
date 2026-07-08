@@ -1,4 +1,4 @@
-type AnyFunction = (...args: any[]) => any
+type AnyFunction = (..._args: any[]) => any
 
 export function memoize<F extends AnyFunction>(fn: F): F {
   const cache = new Map<string, ReturnType<F>>()

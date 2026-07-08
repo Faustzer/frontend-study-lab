@@ -11,8 +11,7 @@ const STATE_KEY = 'frontend-study-lab-oauth-state'
 function loadToken(): string | null {
   try {
     return localStorage.getItem(TOKEN_KEY)
-  }
-  catch { /* ignore */ }
+  } catch { /* ignore */ }
   return null
 }
 
@@ -21,8 +20,7 @@ function loadUser(): User | null {
     const raw = localStorage.getItem(USER_KEY)
     if (raw)
       return JSON.parse(raw)
-  }
-  catch { /* ignore */ }
+  } catch { /* ignore */ }
   return null
 }
 
@@ -49,8 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (val) {
       localStorage.setItem(TOKEN_KEY, val)
       api.setToken(val)
-    }
-    else {
+    } else {
       localStorage.removeItem(TOKEN_KEY)
       api.setToken(null)
     }
@@ -77,8 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
     const state = generateState()
     try {
       localStorage.setItem(STATE_KEY, state)
-    }
-    catch { /* ignore */ }
+    } catch { /* ignore */ }
 
     const loginUrl = authApi.getLoginUrl(provider)
     const separator = loginUrl.includes('?') ? '&' : '?'
@@ -113,8 +109,7 @@ export const useAuthStore = defineStore('auth', () => {
       const newUser: User = JSON.parse(decodeURIComponent(userRaw))
       setSession(newToken, newUser)
       return true
-    }
-    catch {
+    } catch {
       clearSession()
       return false
     }
@@ -137,8 +132,7 @@ export const useAuthStore = defineStore('auth', () => {
       const userData = await authApi.getMe()
       user.value = userData
       return userData
-    }
-    catch {
+    } catch {
       clearSession()
       return null
     }
@@ -151,8 +145,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout() {
     try {
       await authApi.logout()
-    }
-    catch { /* backend unavailable — still clear locally */ }
+    } catch { /* backend unavailable — still clear locally */ }
     clearSession()
   }
 

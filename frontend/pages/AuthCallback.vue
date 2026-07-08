@@ -57,8 +57,7 @@ onMounted(() => {
     setTimeout(() => {
       router.push({ name: 'home' })
     }, 800)
-  }
-  else {
+  } else {
     status.value = 'error'
   }
 })
