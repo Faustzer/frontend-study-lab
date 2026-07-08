@@ -13,3 +13,7 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# conftest sets env vars before importing the app — imports can't be at top
+"tests/conftest.py" = ["E402"]
