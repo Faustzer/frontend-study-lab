@@ -1,0 +1,9 @@
+{
+  "bind": 60,
+  "curry": 60,
+  "debounce": 30,
+  "deepclone": 60,
+  "deepequal": 60,
+  "memoize": 30,
+  "throttle": 30
+}

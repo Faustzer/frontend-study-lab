@@ -4,29 +4,29 @@
 
 ### 1.1 Python Environment
 
-- [ ] Create `backend/` directory in project root
-- [ ] Initialize Python project:
-  - [ ] `pyproject.toml` (or `requirements.txt`)
-  - [ ] Python 3.11+
-  - [ ] Virtual environment (venv or poetry)
-- [ ] Install dependencies:
-  - [ ] `fastapi` — web framework
-  - [ ] `uvicorn[standard]` — ASGI server
-  - [ ] `sqlalchemy` — SQL toolkit (Core, not ORM)
-  - [ ] `asyncpg` — async PostgreSQL driver
-  - [ ] `alembic` — database migrations
-  - [ ] `pydantic` — data validation
-  - [ ] `pydantic-settings` — settings management
-  - [ ] `python-jose[cryptography]` — JWT tokens
-  - [ ] `passlib[bcrypt]` — password hashing (for future)
-  - [ ] `authlib` — OAuth2 client
-  - [ ] `httpx` — async HTTP client (for OAuth)
-  - [ ] `python-dotenv` — environment variables
-  - [ ] `pytest`, `pytest-asyncio`, `httpx` — testing
+- [x] Create `backend/` directory in project root
+- [x] Initialize Python project:
+  - [x] `pyproject.toml` (or `requirements.txt`)
+  - [x] Python 3.11+
+  - [x] Virtual environment (venv or poetry)
+- [x] Install dependencies:
+  - [x] `fastapi` — web framework
+  - [x] `uvicorn[standard]` — ASGI server
+  - [x] `sqlalchemy` — SQL toolkit (Core, not ORM)
+  - [x] `asyncpg` — async PostgreSQL driver
+  - [x] `alembic` — database migrations
+  - [x] `pydantic` — data validation
+  - [x] `pydantic-settings` — settings management
+  - [ ] ~~`python-jose[cryptography]`~~ → used `PyJWT` instead (maintained, no known CVEs)
+  - [ ] `passlib[bcrypt]` — password hashing (skipped: OAuth-only, no passwords)
+  - [x] `authlib` — OAuth2 client
+  - [x] `httpx` — async HTTP client (for OAuth)
+  - [x] `python-dotenv` — environment variables
+  - [x] `pytest`, `pytest-asyncio`, `httpx` — testing
 
 ### 1.2 Docker Setup
 
-- [ ] Create `backend/Dockerfile`:
+- [x] Create `backend/Dockerfile`:
 
   ```dockerfile
   FROM python:3.11-slim
@@ -37,7 +37,7 @@
   CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
   ```
 
-- [ ] Create `docker-compose.yml` in project root:
+- [x] Create `docker-compose.yml` in project root:
 
   ```yaml
   services:
@@ -70,12 +70,12 @@
     pgdata:
   ```
 
-- [ ] Create `.env.example` with all required variables
-- [ ] Test: `docker compose up -d` → API at `http://localhost:8000/docs`
+- [x] Create `.env.example` with all required variables
+- [x] Test: `docker compose up -d` → API at `http://localhost:8000/docs`
 
 ### 1.3 FastAPI Application Structure
 
-- [ ] Create `backend/app/` directory:
+- [x] Create `backend/app/` directory:
 
   ```bash
   backend/app/
@@ -113,7 +113,7 @@
 
 ### 2.1 Schema Design
 
-- [ ] Create `backend/app/models/user.py`:
+- [x] Create `backend/app/models/user.py`:
 
   ```sql
   CREATE TABLE users (
@@ -129,7 +129,7 @@
   CREATE UNIQUE INDEX idx_users_provider ON users(provider, provider_id);
   ```
 
-- [ ] Create `backend/app/models/progress.py`:
+- [x] Create `backend/app/models/progress.py`:
 
   ```sql
   CREATE TABLE user_progress (
@@ -146,25 +146,25 @@
 
 ### 2.2 Alembic Migrations
 
-- [ ] Initialize alembic: `alembic init backend/alembic`
-- [ ] Configure `alembic.ini`:
-  - [ ] Set `sqlalchemy.url` from environment
-  - [ ] Set `script_location = backend/alembic`
-- [ ] Configure `alembic/env.py`:
-  - [ ] Import SQLAlchemy models
-  - [ ] Set up async engine
-- [ ] Create initial migration:
-  - [ ] `alembic revision --autogenerate -m "initial_schema"`
-  - [ ] Review generated migration
-  - [ ] `alembic upgrade head`
-- [ ] Test: verify tables created in PostgreSQL
+- [x] Initialize alembic: `alembic init backend/alembic`
+- [x] Configure `alembic.ini`:
+  - [x] Set `sqlalchemy.url` from environment
+  - [x] Set `script_location = backend/alembic`
+- [x] Configure `alembic/env.py`:
+  - [x] Import SQLAlchemy models
+  - [x] Set up async engine
+- [x] Create initial migration:
+  - [x] `alembic revision --autogenerate -m "initial_schema"`
+  - [x] Review generated migration
+  - [x] `alembic upgrade head`
+- [x] Test: verify tables created in PostgreSQL
 
 ### 2.3 Database Connection
 
-- [ ] Create `backend/app/database.py`:
-  - [ ] Async engine with `asyncpg`
-  - [ ] Session factory
-  - [ ] Dependency injection for FastAPI routes
+- [x] Create `backend/app/database.py`:
+  - [x] Async engine with `asyncpg`
+  - [x] Session factory
+  - [x] Dependency injection for FastAPI routes
 
   ```python
   from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
@@ -184,49 +184,49 @@
 
 ### 3.1 Auth Routes (`/api/auth`)
 
-- [ ] `GET /api/auth/{provider}` — Initiate OAuth2 flow
-  - [ ] Redirect to provider's authorization URL
-  - [ ] Supported providers: google, twitch, discord
-- [ ] `GET /api/auth/{provider}/callback` — OAuth2 callback
-  - [ ] Exchange code for access token
-  - [ ] Fetch user profile from provider
-  - [ ] Create or update user in database
-  - [ ] Generate JWT token
-  - [ ] Redirect to frontend with token
-- [ ] `GET /api/auth/me` — Get current user profile
-  - [ ] Requires JWT token
-  - [ ] Returns user data + progress
-- [ ] `POST /api/auth/logout` — Logout
-  - [ ] Clear session/token
+- [x] `GET /api/auth/{provider}` — Initiate OAuth2 flow
+  - [x] Redirect to provider's authorization URL
+  - [x] Supported providers: google, twitch, discord
+- [x] `GET /api/auth/{provider}/callback` — OAuth2 callback
+  - [x] Exchange code for access token
+  - [x] Fetch user profile from provider
+  - [x] Create or update user in database
+  - [x] Generate JWT token
+  - [x] Redirect to frontend with token
+- [x] `GET /api/auth/me` — Get current user profile
+  - [x] Requires JWT token
+  - [x] Returns user data + progress
+- [x] `POST /api/auth/logout` — Logout
+  - [x] Clear session/token
 
 ### 3.2 Progress Routes (`/api/progress`)
 
-- [ ] `GET /api/progress` — Get user progress
-  - [ ] Requires JWT token
-  - [ ] Returns: xp, level, completedModules, completedChallenges
-- [ ] `POST /api/progress/complete` — Complete a module
-  - [ ] Body: `{ "moduleSlug": "debounce", "xpReward": 30 }`
-  - [ ] Requires JWT token
-  - [ ] Updates progress in database
-  - [ ] Returns updated progress
-- [ ] `POST /api/progress/challenge/complete` — Complete a challenge
-  - [ ] Body: `{ "moduleSlug": "debounce", "challengeId": "test-1", "xpReward": 10 }`
-  - [ ] Requires JWT token
-  - [ ] Returns updated progress
+- [x] `GET /api/progress` — Get user progress
+  - [x] Requires JWT token
+  - [x] Returns: xp, level, completedModules, completedChallenges
+- [x] `POST /api/progress/complete` — Complete a module
+  - [x] Body: `{ "moduleSlug": "debounce", "xpReward": 30 }`
+  - [x] Requires JWT token
+  - [x] Updates progress in database
+  - [x] Returns updated progress
+- [x] `POST /api/progress/challenge/complete` — Complete a challenge
+  - [x] Body: `{ "moduleSlug": "debounce", "challengeId": "test-1", "xpReward": 10 }`
+  - [x] Requires JWT token
+  - [x] Returns updated progress
 
 ### 3.3 JWT Utilities
 
-- [ ] Create `backend/app/utils/jwt.py`:
-  - [ ] `create_access_token(user_id)` → JWT token
-  - [ ] `verify_access_token(token)` → user_id
-  - [ ] Token expiration: 7 days
-- [ ] Create dependency `get_current_user()` for protected routes
+- [x] Create `backend/app/utils/jwt.py`:
+  - [x] `create_access_token(user_id)` → JWT token
+  - [x] `verify_access_token(token)` → user_id
+  - [x] Token expiration: 7 days
+- [x] Create dependency `get_current_user()` for protected routes
 
 ### 3.4 CORS Middleware
 
-- [ ] Configure CORS in `backend/app/main.py`:
-  - [ ] Allow frontend origin (localhost:5173 for dev)
-  - [ ] Allow credentials (for cookies if needed)
+- [x] Configure CORS in `backend/app/main.py`:
+  - [x] Allow frontend origin (localhost:5173 for dev)
+  - [x] Allow credentials (for cookies if needed)
 
 ---
 
@@ -258,26 +258,26 @@
 
 ### 5.1 Backend Unit Tests
 
-- [ ] Create `backend/tests/` directory
-- [ ] Create `backend/tests/conftest.py`:
-  - [ ] Test database (SQLite in-memory or test PostgreSQL)
-  - [ ] Test client (AsyncClient from httpx)
-  - [ ] Fixtures for test user
-- [ ] Create `backend/tests/test_auth.py`:
-  - [ ] Test OAuth2 flow initiation
-  - [ ] Test callback handling
-  - [ ] Test JWT creation/verification
-- [ ] Create `backend/tests/test_progress.py`:
-  - [ ] Test get progress
-  - [ ] Test complete module
-  - [ ] Test complete challenge
-  - [ ] Test level-up logic
+- [x] Create `backend/tests/` directory
+- [x] Create `backend/tests/conftest.py`:
+  - [x] Test database (SQLite in-memory or test PostgreSQL)
+  - [x] Test client (AsyncClient from httpx)
+  - [x] Fixtures for test user
+- [x] Create `backend/tests/test_auth.py`:
+  - [x] Test OAuth2 flow initiation (unknown/unconfigured provider cases)
+  - [ ] Test callback handling (needs mocked provider responses)
+  - [x] Test JWT creation/verification
+- [x] Create `backend/tests/test_progress.py`:
+  - [x] Test get progress
+  - [x] Test complete module
+  - [x] Test complete challenge
+  - [x] Test level-up logic
 
 ### 5.2 Integration Tests
 
 - [ ] Test full OAuth2 flow with mocked provider responses
-- [ ] Test database operations
-- [ ] Test API endpoints with real database
+- [x] Test database operations
+- [x] Test API endpoints with real database (manual smoke via docker-compose, 2026-07-08)
 
 ---
 
@@ -285,11 +285,11 @@
 
 ### 6.1 GitHub Actions
 
-- [ ] Create `.github/workflows/backend-ci.yml`:
-  - [ ] Python linting (ruff or flake8)
+- [x] Create `.github/workflows/backend-ci.yml`:
+  - [x] Python linting (ruff)
   - [ ] Type checking (mypy)
-  - [ ] Run tests
-  - [ ] Build Docker image
+  - [x] Run tests
+  - [x] Build Docker image
 - [ ] Create `.github/workflows/deploy.yml`:
   - [ ] Deploy backend to Railway/Render
   - [ ] Deploy frontend to Vercel/Railway

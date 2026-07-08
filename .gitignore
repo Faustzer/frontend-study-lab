@@ -12,3 +12,7 @@ coverage
 # e2e
 playwright-report
 test-results
+# Python
+__pycache__/
+*.pyc
+.venv/
