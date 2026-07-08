@@ -28,9 +28,11 @@ import AuthModal from '@/components/auth/AuthModal.vue'
 import ToastContainer from '@/components/ui/ToastContainer.vue'
 import { api } from '@/api/client'
 import { useAuthStore } from '@/stores/auth'
+import { useProgressStore } from '@/stores/progress'
 import { useUiStore } from '@/stores/ui'
 
 const auth = useAuthStore()
+const progress = useProgressStore()
 const ui = useUiStore()
 
 // Register 401 handler — clear session and show auth modal
@@ -45,7 +47,10 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-  if (!auth.isAuthenticated && ui.shouldShowAuthModal()) {
+  if (auth.isAuthenticated) {
+    void progress.syncWithBackend()
+  }
+  else if (ui.shouldShowAuthModal()) {
     ui.openAuthModal()
   }
 })

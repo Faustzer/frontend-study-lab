@@ -28,11 +28,13 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
+import { useProgressStore } from '@/stores/progress'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { onMounted, ref } from 'vue'
 
 const auth = useAuthStore()
+const progress = useProgressStore()
 const router = useRouter()
 const { t } = useI18n()
 
@@ -50,6 +52,7 @@ onMounted(() => {
 
   if (success) {
     status.value = 'success'
+    void progress.syncWithBackend()
     // Redirect to home after a brief delay so the user sees the success state
     setTimeout(() => {
       router.push({ name: 'home' })

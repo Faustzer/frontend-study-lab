@@ -196,10 +196,10 @@
 
 ### 3.3 Backend Sync
 
-- [ ] Update `stores/progress.ts`:
-  - [ ] On login: fetch progress from backend → merge with local
-  - [ ] On module complete: POST to backend → update local on success
-  - [ ] Handle offline mode: queue changes → sync when online
+- [x] Update `stores/progress.ts`:
+  - [x] On login: fetch progress from backend → merge with local (`syncWithBackend()`, `isOnline`)
+  - [x] On module complete: POST to backend → update local on success
+  - [x] Handle offline mode: queue changes → sync when online (persistent queue + `online` event)
 - [x] Add request interceptor to `frontend/api/client.ts`:
   - [x] Attach JWT token to all requests
   - [x] Handle 401 → redirect to login
