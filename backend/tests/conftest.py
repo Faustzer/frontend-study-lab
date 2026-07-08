@@ -5,6 +5,11 @@ import os
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite://"
 os.environ["JWT_SECRET"] = "test-secret-0123456789abcdef0123456789abcdef"
 os.environ["DEV_LOGIN_ENABLED"] = "true"
+# Explicitly blank OAuth credentials: env vars take precedence over a
+# developer's backend/.env, so tests never see real provider config.
+for _provider in ("GOOGLE", "TWITCH", "DISCORD"):
+    os.environ[f"{_provider}_CLIENT_ID"] = ""
+    os.environ[f"{_provider}_CLIENT_SECRET"] = ""
 
 import pytest
 from httpx import ASGITransport, AsyncClient
