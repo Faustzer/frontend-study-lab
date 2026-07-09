@@ -16,7 +16,6 @@
     "lint": "eslint --config frontend/eslint.config.mjs frontend/",
     "lint:fix": "eslint --config frontend/eslint.config.mjs frontend/ --fix",
     "test": "vitest --config frontend/vitest.config.ts",
-    "test:unit": "vitest run --config frontend/vitest.config.ts",
     "test:run": "vitest run --config frontend/vitest.config.ts",
     "test:e2e": "playwright test --config frontend/playwright.config.ts",
     "prepare": "husky"
