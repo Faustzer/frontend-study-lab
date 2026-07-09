@@ -1,15 +1,15 @@
 name: Bot scheduled / dispatched
 on:
   schedule:
-    # Москва = UTC+3 (без перевода часов)
-    - cron: "0 21 * * *"   # 00:00 МСК — здоровье кода
-    # - cron: "0 23 * * *"   # 02:00 МСК — тесты
-    # - cron: "0 1 * * *"    # 04:00 МСК — качество кода
-    # - cron: "0 3 * * *"    # 06:00 МСК — документация и i18n
+    # Moscow = UTC+3
+    - cron: "0 21 * * *"   # 00:00 MSK — code health check
+    # - cron: "0 23 * * *"   # 02:00 MSK — tests
+    # - cron: "0 1 * * *"    # 04:00 MSK — code quality check
+    # - cron: "0 3 * * *"    # 06:00 MSK — docs and i18n
   workflow_dispatch:
     inputs:
       prompt:
-        description: "Задача для бота"
+        description: "Task for bot"
         required: false
 
 jobs:
@@ -43,11 +43,11 @@ jobs:
             PROMPT="$MANUAL_PROMPT"
           else
             case "${{ github.event.schedule }}" in
-              "0 21 * * *") PROMPT='Прогони pnpm lint, pnpm typecheck и pnpm test:run. Если есть падения — исправь их и открой PR в ветку bot/nightly-health-<дата>. Ничего не мержить. Если всё чисто — заверши без PR.' ;;
-              "0 23 * * *") PROMPT='Найди в frontend/ один компонент или composable без unit-тестов (или со слабым покрытием), напиши для него тесты в стиле существующих (vitest + vue test utils + msw при необходимости), убедись что pnpm test:run проходит, и открой PR в ветку bot/nightly-tests-<дата>. Не более одного компонента за ночь. Ничего не мержить.' ;;
-              "0 1 * * *") PROMPT='Проведи небольшой рефакторинг качества кода в frontend/: найди одно место с дублированием, мёртвым кодом или устаревшим паттерном, аккуратно исправь, прогони pnpm lint, pnpm typecheck и pnpm test:run, и открой PR в ветку bot/nightly-quality-<дата>. Изменение должно быть маленьким и легко ревьюибельным. Ничего не мержить.' ;;
-              "0 3 * * *") PROMPT='Проверь консистентность документации и i18n: README соответствует актуальным скриптам package.json, ключи локализации vue-i18n не имеют пропусков между языками. Если нашёл расхождения — исправь и открой PR в ветку bot/nightly-docs-<дата>. Если всё в порядке — заверши без PR.' ;;
-              *) PROMPT='Прогони pnpm lint и pnpm test:run. Если есть падения — исправь и открой PR в ветку bot/nightly-<дата>. Ничего не мержить.' ;;
+              "0 21 * * *") PROMPT='Run pnpm lint, pnpm typecheck, and pnpm test:run. If any checks fail, fix the issues and open a PR targeting the branch bot/nightly-health-<date>. Do not merge anything. If everything passes, finish without creating a PR.' ;;
+              "0 23 * * *") PROMPT='Find one component or composable in frontend/ that has no unit tests (or has weak test coverage). Write tests following the existing style (Vitest + Vue Test Utils + MSW if needed), ensure pnpm test:run passes, and open a PR targeting the branch bot/nightly-tests-<date>. Do not work on more than one component per night. Do not merge anything.' ;;
+              "0 1 * * *") PROMPT='Perform a small code quality refactoring in frontend/. Find one instance of duplicated code, dead code, or an outdated pattern, improve it carefully, run pnpm lint, pnpm typecheck, and pnpm test:run, then open a PR targeting the branch bot/nightly-quality-<date>. The change should be small and easy to review. Do not merge anything.' ;;
+              "0 3 * * *") PROMPT='Check documentation and i18n consistency. Verify that the README matches the current scripts in package.json and that vue-i18n localization keys are consistent across all languages with no missing entries. If you find any inconsistencies, fix them and open a PR targeting the branch bot/nightly-docs-<date>. If everything is already consistent, finish without creating a PR.' ;;
+              *) PROMPT='Run pnpm lint and pnpm test:run. If any checks fail, fix them and open a PR targeting the branch bot/nightly-<date>. Do not merge anything.' ;;
             esac
           fi
           {

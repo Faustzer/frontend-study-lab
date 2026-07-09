@@ -2,6 +2,25 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Backend: FastAPI (uvicorn)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload", "--port", "8000"],
+      "python": "${workspaceFolder}/backend/.venv/bin/python",
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "subProcess": true,
+      "preLaunchTask": "db: up & wait"
+    },
+    {
+      "name": "Frontend: Vite (dev-wait)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm run dev-wait",
+      "cwd": "${workspaceFolder}"
+    },
+    {
       "name": "Debug TS: Current File",
       "type": "node",
       "request": "launch",
@@ -30,6 +49,13 @@
       "skipFiles": [
         "<node_internals>/**"
       ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run All (DB + Backend + Frontend)",
+      "configurations": ["Backend: FastAPI (uvicorn)", "Frontend: Vite (dev-wait)"],
+      "stopAll": true
     }
   ]
 }
