@@ -65,7 +65,7 @@ function handleLogin() {
 
 .auth-btn {
   display: inline-flex;
-  align-items: center;
+  align-content: center;
   justify-content: center;
   gap: $space-sm;
   width: 100%;
@@ -96,8 +96,9 @@ function handleLogin() {
 
   // Provider variants
   &--google {
+    color: black;
     &:hover:not(:disabled) {
-      border-color: #4285f4;
+      background: #fcfafa;
     }
   }
 
