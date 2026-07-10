@@ -23,7 +23,7 @@ describe('buildCategory', () => {
   const slug = 'js-core'
   const meta = {
     title: 'JavaScript Core',
-    description: 'Фундаментальные концепции JS: замыкания, контекст, функции высшего порядка',
+    description: 'Fundamental JS concepts: closures, context, higher-order functions',
     icon: '🟨',
     order: 1,
   }
@@ -32,7 +32,7 @@ describe('buildCategory', () => {
     const result: TopicCategory = buildCategory(slug, meta, mockTopicItems)
     expect(result.slug).toBe('js-core')
     expect(result.title).toBe('JavaScript Core')
-    expect(result.description).toBe('Фундаментальные концепции JS: замыкания, контекст, функции высшего порядка')
+    expect(result.description).toBe('Fundamental JS concepts: closures, context, higher-order functions')
     expect(result.icon).toBe('🟨')
     expect(result.order).toBe(1)
     expect(result.items).toHaveLength(2)

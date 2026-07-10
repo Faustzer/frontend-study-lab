@@ -1,6 +1,6 @@
 # Skeleton Workflow
 
-When the user asks `скелет для <task-name>`, create a new topic page following this structure.
+When the user asks for a skeleton (`skeleton for <task-name>`, historically `скелет для <task-name>`), create a new topic page following this structure.
 
 ## Files Created
 

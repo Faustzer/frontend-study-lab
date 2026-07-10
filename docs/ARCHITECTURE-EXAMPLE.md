@@ -1,130 +1,134 @@
-# Nuxt 3 + FastAPI — Архитектура Fullstack приложения (референс)
+# Nuxt 3 + FastAPI — Fullstack Application Architecture (reference)
 
-> Это описание архитектуры **другого** production-приложения — референс для
-> миграции frontend-study-lab на Nuxt (см. `MIGRATION.md`). Ниже — сравнение
-> с текущей архитектурой проекта: что совпадает, что отличается и что стоит
-> перенимать.
+> This describes the architecture of a **different** production application —
+> a reference for migrating frontend-study-lab to Nuxt (see `MIGRATION.md`).
+> Below is a comparison with the current project architecture: what matches,
+> what differs, and what is worth adopting.
 
-## 0. Сравнение с текущей архитектурой frontend-study-lab
+## 0. Comparison with the current frontend-study-lab architecture
 
-| Аспект | Референс (этот документ) | frontend-study-lab (сейчас) |
+| Aspect | Reference (this document) | frontend-study-lab (today) |
 |---|---|---|
-| Фреймворк | Nuxt 3/4 (SSR + SPA hybrid) | Vue 3 SPA (Vite) |
-| Рендеринг | `routeRules`: публичное — SSR, кабинет — SPA | Всё — SPA; SEO нет |
-| Хостинг фронта | Node-сервер (Nitro) | GitHub Pages (статика) |
-| UI | Vuetify (Material) | Свой UI-кит (`components/ui/`) + SCSS |
+| Framework | Nuxt 3/4 (SSR + SPA hybrid) | Vue 3 SPA (Vite) |
+| Rendering | `routeRules`: public — SSR, cabinet — SPA | Everything SPA; no SEO |
+| Frontend hosting | Node server (Nitro) | GitHub Pages (static) |
+| UI | Vuetify (Material) | Own UI kit (`components/ui/`) + SCSS |
 | State | Pinia (options API stores) | Pinia (setup stores) + persistedstate |
-| API-клиент | `$fetch` + nuxt-open-fetch, авто-retry при 401 | Свой fetch-обёртка `api/client.ts`, 401 → модалка |
-| Связь с бэком | Nitro-прокси `/api/**` → FastAPI (без CORS) | Прямые запросы на Railway URL + CORS middleware |
-| Auth-токены | Access + refresh в cookies, CSRF-cookie | JWT (7 дней) в localStorage, без refresh |
-| CSRF | Cookie `XSRF-TOKEN` на каждый запрос | Только OAuth `state` (для callback) |
-| Типизация API | Автогенерация из OpenAPI (nuxt-open-fetch) | Ручные типы `api/types.ts`, зеркалят Pydantic |
-| Аутентификация | Email/password + refresh flow | OAuth-only (Google; Twitch/Discord позже) |
-| i18n | @nuxtjs/i18n | vue-i18n напрямую |
-| Бэкенд | FastAPI, python-jose | FastAPI, PyJWT + authlib, SQLAlchemy async + alembic |
+| API client | `$fetch` + nuxt-open-fetch, auto-retry on 401 | Own fetch wrapper `api/client.ts`, 401 → modal |
+| Backend connection | Nitro proxy `/api/**` → FastAPI (no CORS) | Direct requests to the Railway URL + CORS middleware |
+| Auth tokens | Access + refresh in cookies, CSRF cookie | JWT (7 days) in localStorage, no refresh |
+| CSRF | `XSRF-TOKEN` cookie on every request | Only the OAuth `state` (for the callback) |
+| API typing | Generated from OpenAPI (nuxt-open-fetch) | Hand-written `api/types.ts` mirroring Pydantic |
+| Authentication | Email/password + refresh flow | OAuth-only (Google; Twitch/Discord later) |
+| i18n | @nuxtjs/i18n | vue-i18n directly |
+| Backend | FastAPI, python-jose | FastAPI, PyJWT + authlib, SQLAlchemy async + alembic |
 
-**Что стоит перенять при миграции (фазы см. в MIGRATION.md):**
+**Worth adopting during the migration (phases in MIGRATION.md):**
 
-- `routeRules` / пререндер публичных страниц — главная цель миграции (SEO);
-  в нашем случае через SSG, а не SSR-сервер (хостинг статический).
-- `nuxt-open-fetch` — автогенерация типов из `/openapi.json` FastAPI
-  вместо ручной синхронизации `api/types.ts` с Pydantic-схемами.
-  Применимо уже сейчас, даже до Nuxt (openapi-typescript).
-- Nitro-прокси `/api/**` — снимет CORS и спрячет Railway-URL, но требует
-  Node-сервер → только вместе с отложенной фазой SSR.
-- Cookie-based auth + refresh-токены — безопаснее localStorage (XSS),
-  но тоже требует серверную часть на фронте; отложено вместе с SSR.
+- `routeRules` / prerendering public pages — the main migration goal (SEO);
+  in our case via SSG rather than an SSR server (hosting is static).
+- `nuxt-open-fetch` — type generation from FastAPI's `/openapi.json`
+  instead of manually keeping `api/types.ts` in sync with Pydantic schemas.
+  Applicable even today, before Nuxt (openapi-typescript).
+- The Nitro proxy `/api/**` — removes CORS and hides the Railway URL, but
+  requires a Node server → only together with the deferred SSR phase.
+- Cookie-based auth + refresh tokens — safer than localStorage (XSS),
+  but also needs a server on the frontend side; deferred along with SSR.
 
-**Что перенимать не стоит:**
+**Not worth adopting:**
 
-- Vuetify — у проекта свой лёгкий UI-кит, тянуть Material-фреймворк незачем.
-- FingerprintJS — задача идентификации анонимов у нас решена проще:
-  гостевой прогресс живёт в localStorage и мержится при логине.
-- Email/password auth — осознанно выбран OAuth-only (без хранения паролей).
+- Vuetify — the project has its own lightweight UI kit; no reason to pull in
+  a Material framework.
+- FingerprintJS — anonymous-user identification is solved more simply here:
+  guest progress lives in localStorage and merges on login.
+- Email/password auth — OAuth-only was a deliberate choice (no password storage).
 
-## Обзор
+## Overview
 
-Это приложение построено на стеке **Nuxt 3 (Vue 3)** на фронтенде и **FastAPI (Python)** на бэкенде. Используется паттерн **SSR + SPA hybrid**: публичные страницы рендерятся на сервере для SEO, а личный кабинет и авторизация работают как SPA.
+The application is built on **Nuxt 3 (Vue 3)** on the frontend and
+**FastAPI (Python)** on the backend. It uses an **SSR + SPA hybrid** pattern:
+public pages are server-rendered for SEO, while the user cabinet and auth run
+as an SPA.
 
 ```md
 ┌─────────────────────────────────────────────────────────────────┐
-│                        КЛИЕНТ (Browser)                         │
+│                        CLIENT (Browser)                         │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │  Nuxt 3 App (Vue 3 + Pinia + Vuetify)                    │  │
-│  │  - SSR для публичных страниц                              │  │
-│  │  - SPA для /cabinet и /auth                               │  │
-│  │  - useAsyncData для серверной загрузки данных              │  │
-│  │  - mainApi для клиентских запросов с CSRF + Auth          │  │
+│  │  - SSR for public pages                                   │  │
+│  │  - SPA for /cabinet and /auth                             │  │
+│  │  - useAsyncData for server-side data loading              │  │
+│  │  - mainApi for client requests with CSRF + Auth           │  │
 │  └───────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
                               │ HTTP (JSON)
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    СЕРВЕР (Node.js / Nitro)                      │
+│                    SERVER (Node.js / Nitro)                      │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │  Nuxt Server Handler                                      │  │
-│  │  - server/routes/api.ts — прокси на бэкенд                │  │
-│  │  - middleware/auth.global.ts — защита роутов              │  │
-│  │  - plugins/auth.ts — инициализация auth                      │  │
+│  │  - server/routes/api.ts — proxy to the backend            │  │
+│  │  - middleware/auth.global.ts — route protection           │  │
+│  │  - plugins/auth.ts — auth initialization                  │  │
 │  └───────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
                               │ HTTP (JSON)
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    БЭКЕНД (FastAPI / Python)                    │
+│                    BACKEND (FastAPI / Python)                   │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │  FastAPI App                                              │  │
-│  │  - /openapi.json — схема для генерации типов            │  │
-│  │  - JWT аутентификация (access + refresh tokens)          │  │
+│  │  - /openapi.json — schema for type generation             │  │
+│  │  - JWT authentication (access + refresh tokens)           │  │
 │  │  - CORS middleware                                        │  │
-│  │  - Pydantic модели для валидации                         │  │
+│  │  - Pydantic models for validation                         │  │
 │  └───────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 1. Структура проекта
+## 1. Project structure
 
 ```md
 front/
-├── .env                        # Переменные окружения
-├── package.json                # Зависимости и скрипты
-├── nuxt.config.ts              # Конфигурация Nuxt
-├── api.ts                      # Клиент API (обёртка над $fetch)
+├── .env                        # Environment variables
+├── package.json                # Dependencies and scripts
+├── nuxt.config.ts              # Nuxt configuration
+├── api.ts                      # API client ($fetch wrapper)
 ├── server/
 │   └── routes/
-│       └── api.ts              # Серверный прокси → бэкенд
+│       └── api.ts              # Server proxy → backend
 ├── middleware/
-│   └── auth.global.ts          # Route middleware для защиты роутов
+│   └── auth.global.ts          # Route middleware for protected routes
 ├── plugins/
-│   └── auth.ts                 # Nuxt plugin для инициализации auth
+│   └── auth.ts                 # Nuxt plugin for auth initialization
 ├── stores/
-│   ├── auth.ts                 # Pinia store для аутентификации
-│   └── globalStore.ts          # Глобальное состояние (loading, posting)
+│   ├── auth.ts                 # Pinia store for authentication
+│   └── globalStore.ts          # Global state (loading, posting)
 ├── composables/
-│   ├── useAuth.ts              # Логика аутентификации
-│   ├── useFingerprint.ts       # FingerprintJS для анонимов
-│   ├── useContentView.ts       # Регистрация просмотров
+│   ├── useAuth.ts              # Authentication logic
+│   ├── useFingerprint.ts       # FingerprintJS for anonymous users
+│   ├── useContentView.ts       # View tracking
 │   └── useHttpErrorNotifications.ts
 ├── pages/
 │   └── landing/
 │       └── home/
-│           └── index.vue       # Главная страница (SSR)
+│           └── index.vue       # Home page (SSR)
 ├── components/
 │   └── pages/
 │       └── home/
 │           └── sections/
-│               └── News.vue    # Секция новостей (useAsyncData)
+│               └── News.vue    # News section (useAsyncData)
 └── types/
-    └── data-types.ts           # TypeScript типы
+    └── data-types.ts           # TypeScript types
 ```
 
 ---
 
-## 2. Зависимости (package.json)
+## 2. Dependencies (package.json)
 
-### Основные пакеты
+### Main packages
 
 ```json
 {
@@ -158,52 +162,52 @@ front/
 }
 ```
 
-### Что делает каждый пакет
+### What each package does
 
-| Пакет                          | Назначение                                      |
-| ------------------------------ | ----------------------------------------------- |
-| `nuxt`                         | Фреймворк (SSR + SPA + маршрутизация)           |
-| `@pinia/nuxt`                  | State management                                |
-| `nuxt-open-fetch`              | Автогенерация TypeScript типов из OpenAPI схемы |
-| `@vueuse/nuxt`                 | Утилиты Vue (useAsyncData, useFetch и др.)      |
-| `@nuxtjs/i18n`                 | Интернационализация                             |
-| `vuetify`                      | UI компоненты (Material Design)                 |
-| `@fingerprintjs/fingerprintjs` | Идентификация анонимных пользователей           |
+| Package                        | Purpose                                          |
+| ------------------------------ | ------------------------------------------------ |
+| `nuxt`                         | Framework (SSR + SPA + routing)                  |
+| `@pinia/nuxt`                  | State management                                 |
+| `nuxt-open-fetch`              | TypeScript type generation from the OpenAPI schema |
+| `@vueuse/nuxt`                 | Vue utilities (useAsyncData, useFetch, etc.)     |
+| `@nuxtjs/i18n`                 | Internationalization                             |
+| `vuetify`                      | UI components (Material Design)                  |
+| `@fingerprintjs/fingerprintjs` | Anonymous user identification                    |
 
 ---
 
-## 3. Конфигурация Nuxt (nuxt.config.ts)
+## 3. Nuxt configuration (nuxt.config.ts)
 
 ```typescript
 import type { ModuleOptions } from "nuxt-open-fetch";
 import type { NuxtConfig } from "nuxt/schema";
 
 export default defineNuxtConfig(<{ openFetch: ModuleOptions } & NuxtConfig>{
-  // SSR включён глобально
+  // SSR enabled globally
   ssr: true,
 
-  // Правила маршрутизации — какие страницы SSR, какие SPA
+  // Route rules — which pages are SSR and which are SPA
   routeRules: {
-    "/": { ssr: true }, // Главная — SSR (SEO)
-    "/news/**": { ssr: true }, // Новости — SSR
-    "/cabinet/**": { ssr: false }, // Кабинет — SPA
-    "/auth/**": { ssr: false }, // Авторизация — SPA
+    "/": { ssr: true }, // Home — SSR (SEO)
+    "/news/**": { ssr: true }, // News — SSR
+    "/cabinet/**": { ssr: false }, // Cabinet — SPA
+    "/auth/**": { ssr: false }, // Auth — SPA
   },
 
-  // Серверные обработчики (прокси на бэкенд)
+  // Server handlers (proxy to the backend)
   serverHandlers: [{ route: "/api/**", handler: "~/server/routes/api.ts" }],
 
-  // Модули
+  // Modules
   modules: ["@pinia/nuxt", "nuxt-open-fetch", "@vueuse/nuxt", "@nuxtjs/i18n"],
 
-  // Конфигурация окружения
+  // Environment configuration
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.BACKEND_HOST,
     },
   },
 
-  // Настройки Vite
+  // Vite settings
   vite: {
     ssr: {
       noExternal: ["vuetify"],
@@ -214,12 +218,12 @@ export default defineNuxtConfig(<{ openFetch: ModuleOptions } & NuxtConfig>{
 
 ---
 
-## 4. Серверный прокси (server/routes/api.ts)
+## 4. Server proxy (server/routes/api.ts)
 
-Все запросы к API идут через `/api/**` → прокси → бэкенд. Это позволяет:
+All API requests go through `/api/**` → proxy → backend. This allows:
 
-- Избежать CORS проблем в dev-режиме
-- Использовать относительные URL на клиенте
+- Avoiding CORS problems in dev mode
+- Using relative URLs on the client
 
 ```typescript
 import {
@@ -249,13 +253,13 @@ export default defineEventHandler(async (event) => {
 
 ---
 
-## 5. Клиент API (api.ts)
+## 5. API client (api.ts)
 
-Обёртка над `$fetch` с автоматическим добавлением:
+A `$fetch` wrapper that automatically adds:
 
-- JWT токена в `Authorization` header
-- CSRF токена в `X-CSRF-TOKEN` header
-- Авто-refresh токена при 401
+- The JWT token in the `Authorization` header
+- The CSRF token in the `X-CSRF-TOKEN` header
+- Auto-refresh of the token on 401
 
 ```typescript
 import { useSumoApi } from "#open-fetch";
@@ -294,10 +298,10 @@ async function requestTokenRefresh(): Promise<boolean> {
   return true;
 }
 
-// Главный API клиент
+// Main API client
 export const mainApi = {
   async(path: string, opts: any = {}) {
-    // Добавляем токен и CSRF
+    // Attach the token and CSRF
     if (!isAuthEndpoint(path)) {
       opts.headers = {
         ...opts.headers,
@@ -306,7 +310,7 @@ export const mainApi = {
       };
     }
 
-    // При 401 — пытаемся обновить токен и повторить запрос
+    // On 401 — try to refresh the token and retry the request
     opts.retry = 1;
     opts.retryStatusCodes = [401];
 
@@ -317,7 +321,7 @@ export const mainApi = {
 
 ---
 
-## 6. Аутентификация
+## 6. Authentication
 
 ### 6.1. Store (stores/auth.ts)
 
@@ -351,29 +355,29 @@ export const useAuthStore = defineStore("auth", {
 
 ### 6.2. Plugin (plugins/auth.ts)
 
-Инициализация аутентификации при загрузке приложения:
+Auth initialization on app load:
 
 ```typescript
 export default defineNuxtPlugin(async () => {
   const { ensureCsrf, fetchProfile } = useAuth();
 
   if (import.meta.server) {
-    // На сервере — только если есть CSRF токен
+    // On the server — only if a CSRF token exists
     const csrfToken = useCookie<string | null>("XSRF-TOKEN");
     if (!csrfToken.value) return;
     await fetchProfile();
     return;
   }
 
-  // На клиенте — всегда инициализируем
+  // On the client — always initialize
   await ensureCsrf();
   await fetchProfile();
 });
 ```
 
-### 6.3. Route Middleware (middleware/auth.global.ts)
+### 6.3. Route middleware (middleware/auth.global.ts)
 
-Защита роутов на уровне навигации:
+Route protection at the navigation level:
 
 ```typescript
 import { useAuthStore } from "~/stores/auth";
@@ -383,7 +387,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isProtected = to.path.startsWith("/cabinet");
   const isAuthRoute = to.path.startsWith("/auth/");
 
-  // Если не авторизован и пытается в защищённый роут → на логин
+  // Unauthenticated user heading to a protected route → login
   if (!authStore.isAuthenticated && isProtected) {
     return navigateTo({
       path: "/auth/login",
@@ -391,7 +395,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     });
   }
 
-  // Если авторизован и пытается в auth роут → на главную
+  // Authenticated user heading to an auth route → home
   if (authStore.isAuthenticated && isAuthRoute) {
     return navigateTo({ name: "home" });
   }
@@ -442,14 +446,14 @@ export function useAuth() {
 
 ---
 
-## 7. SSR запросы данных (useAsyncData)
+## 7. SSR data fetching (useAsyncData)
 
-### 7.1. Паттерн
+### 7.1. The pattern
 
 ```vue
 <script setup lang="ts">
-// Данные загружаются на сервере, вставляются в HTML,
-// гидратируются на клиенте без дополнительного запроса
+// Data is loaded on the server, embedded into the HTML,
+// and hydrated on the client without an extra request
 const { data: newsResponse } = await useAsyncData(() =>
   $fetch<NewsResponseDto>("/api/news?page=1&limit=6"),
 );
@@ -464,45 +468,45 @@ const news = computed(() =>
 </script>
 ```
 
-### 7.2. Как это работает
+### 7.2. How it works
 
 ```md
 ┌─────────────────────────────────────────────────────────────┐
-│                     СЕРВЕР (Node.js)                        │
+│                     SERVER (Node.js)                        │
 ├─────────────────────────────────────────────────────────────┤
-│  1. Запрос GET /                                            │
-│  2. Nuxt рендерит страницу                                  │
-│  3. Встречает await useAsyncData(...)                        │
-│  4. Вызывает $fetch('/api/news') → прокси → бэкенд         │
-│  5. Получает данные                                         │
-│  6. Сериализует в <script id="__NUXT_DATA__">              │
+│  1. Request GET /                                           │
+│  2. Nuxt renders the page                                   │
+│  3. Encounters await useAsyncData(...)                      │
+│  4. Calls $fetch('/api/news') → proxy → backend             │
+│  5. Receives the data                                       │
+│  6. Serializes it into <script id="__NUXT_DATA__">          │
 └─────────────────────────────────────────────────────────────┘
                               │ HTML
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                     КЛИЕНТ (Browser)                         │
+│                     CLIENT (Browser)                         │
 ├─────────────────────────────────────────────────────────────┤
-│  1. Получает HTML с данными                                 │
-│  2. Nuxt парсит __NUXT_DATA__                               │
-│  3. Создает reactive ref с данными                          │
-│  4. Компонент рендерится без дополнительного запроса        │
+│  1. Receives HTML with the data                             │
+│  2. Nuxt parses __NUXT_DATA__                               │
+│  3. Creates a reactive ref with the data                    │
+│  4. The component renders without an extra request          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 7.3. Важные нюансы
+### 7.3. Important nuances
 
-| Аспект                | Описание                                                    |
-| --------------------- | ----------------------------------------------------------- |
-| Ключ                  | Уникальный идентификатор для гидратации (авто-генерируется) |
-| Значение по умолчанию | `default: () => []` — для типобезопасности при гидратации   |
-| Реактивность          | `data` — ref, можно использовать в computed/watch           |
-| Обновление            | `refresh()` — для повторного запроса                        |
+| Aspect          | Description                                              |
+| --------------- | -------------------------------------------------------- |
+| Key             | Unique identifier for hydration (auto-generated)          |
+| Default value   | `default: () => []` — for type safety during hydration    |
+| Reactivity      | `data` is a ref, usable in computed/watch                 |
+| Refreshing      | `refresh()` — to re-run the request                       |
 
 ---
 
-## 8. Типизация API (nuxt-open-fetch)
+## 8. API typing (nuxt-open-fetch)
 
-### 8.1. Конфигурация
+### 8.1. Configuration
 
 ```typescript
 // nuxt.config.ts
@@ -515,17 +519,17 @@ export default defineNuxtConfig({
 });
 ```
 
-### 8.2. Генерация типов
+### 8.2. Type generation
 
 ```bash
-# Скачать OpenAPI схему с бэкенда
+# Download the OpenAPI schema from the backend
 curl http://localhost:8000/openapi.json > api.json
 
-# Типы генерируются автоматически при nuxt prepare / dev
+# Types are generated automatically on nuxt prepare / dev
 pnpm postinstall
 ```
 
-### 8.3. Использование типов
+### 8.3. Using the types
 
 ```typescript
 import type { NewsResponseDto, NewsArticleDto } from "#open-fetch-schemas/api";
@@ -535,44 +539,44 @@ const { data } = await useAsyncData(() => $fetch<NewsResponseDto>("/api/news"));
 
 ---
 
-## 9. Переменные окружения (.env)
+## 9. Environment variables (.env)
 
 ```env
-# Хост бэкенда (FastAPI)
+# Backend host (FastAPI)
 BACKEND_HOST=http://localhost:8000
 
-# Для генерации типов (опционально)
+# For type generation (optional)
 OPENAPI_SCHEMA_HOST=http://localhost:8000
 
-# Публичные ключи (доступны на клиенте)
+# Public keys (available on the client)
 PUBLIC_API_KEY=your-api-key
 ```
 
 ---
 
-## 10. FastAPI бэкенд — минимальный пример
+## 10. FastAPI backend — minimal example
 
-### 10.1. Структура
+### 10.1. Structure
 
 ```md
 backend/
 ├── app/
 │   ├── __init__.py
-│   ├── main.py              # Точка входа
+│   ├── main.py              # Entry point
 │   ├── routers/
 │   │   ├── __init__.py
 │   │   ├── news.py          # /news endpoints
 │   │   └── auth.py          # /auth endpoints
 │   ├── models/
 │   │   ├── __init__.py
-│   │   └── news.py          # Pydantic модели
-│   ├── dependencies.py      # Зависимости (auth, db)
-│   └── config.py            # Настройки
+│   │   └── news.py          # Pydantic models
+│   ├── dependencies.py      # Dependencies (auth, db)
+│   └── config.py            # Settings
 ├── requirements.txt
 └── .env
 ```
 
-### 10.2. Минимальный пример
+### 10.2. Minimal example
 
 ```python
 # app/main.py
@@ -614,7 +618,7 @@ async def list_news(page: int = 1, limit: int = 6):
     }
 ```
 
-### 10.3. Pydantic модели
+### 10.3. Pydantic models
 
 ```python
 # app/models/news.py
@@ -647,7 +651,7 @@ class NewsResponse(BaseModel):
     items: list[NewsItem]
 ```
 
-### 10.4. JWT аутентификация
+### 10.4. JWT authentication
 
 ```python
 # app/dependencies.py
@@ -687,41 +691,41 @@ pydantic==2.9.0
 
 ---
 
-## 11. Чеклист для воспроизведения
+## 11. Reproduction checklist
 
-| Компонент  | Стек                     | Статус |
+| Component  | Stack                    | Status |
 | ---------- | ------------------------ | ------ |
-| Фреймворк  | Nuxt 3 + Vue 3           | ✅     |
+| Framework  | Nuxt 3 + Vue 3           | ✅     |
 | UI         | Vuetify 3                | ✅     |
 | State      | Pinia                    | ✅     |
-| API клиент | nuxt-open-fetch + $fetch | ✅     |
-| Прокси     | Nuxt server handler      | ✅     |
+| API client | nuxt-open-fetch + $fetch | ✅     |
+| Proxy      | Nuxt server handler      | ✅     |
 | SSR        | useAsyncData             | ✅     |
 | Auth       | JWT + Cookies            | ✅     |
 | CSRF       | Cookie-based             | ✅     |
-| Типизация  | OpenAPI → TypeScript     | ✅     |
-| Роутинг    | Pages + Router           | ✅     |
+| Typing     | OpenAPI → TypeScript     | ✅     |
+| Routing    | Pages + Router           | ✅     |
 | Middleware | Route guards             | ✅     |
-| Бэкенд     | FastAPI                  | ✅     |
+| Backend    | FastAPI                  | ✅     |
 | CORS       | FastAPI middleware       | ✅     |
 
 ---
 
-## 12. Ключевые паттерны
+## 12. Key patterns
 
 ### 12.1. Hybrid SSR/SPA
 
 ```typescript
 // nuxt.config.ts
 routeRules: {
-  '/': { ssr: true },           // Публичные — SSR (SEO)
-  '/news/**': { ssr: true },    // Контент — SSR
-  '/cabinet/**': { ssr: false }, // Кабинет — SPA
-  '/auth/**': { ssr: false },    // Авторизация — SPA
+  '/': { ssr: true },           // Public — SSR (SEO)
+  '/news/**': { ssr: true },    // Content — SSR
+  '/cabinet/**': { ssr: false }, // Cabinet — SPA
+  '/auth/**': { ssr: false },    // Auth — SPA
 }
 ```
 
-### 12.2. Прокси на сервере
+### 12.2. Server-side proxy
 
 ```typescript
 // server/routes/api.ts
@@ -729,7 +733,7 @@ routeRules: {
 return proxyRequest(event, `${target}${path}${url.search}`);
 ```
 
-### 12.3. useAsyncData для SSR
+### 12.3. useAsyncData for SSR
 
 ```vue
 <script setup>
@@ -740,17 +744,17 @@ const { data } = await useAsyncData(
 </script>
 ```
 
-### 12.4. mainApi для клиентских запросов
+### 12.4. mainApi for client requests
 
 ```typescript
-// С авто-добавлением токена и CSRF
+// With automatic token and CSRF attachment
 await mainApi("/endpoint", {
   method: "POST",
   body: { data },
 });
 ```
 
-### 12.5. Защита роутов
+### 12.5. Route protection
 
 ```typescript
 // middleware/auth.global.ts
@@ -761,9 +765,9 @@ if (!authStore.isAuthenticated && isProtected) {
 
 ---
 
-## 13. Команды для запуска
+## 13. Run commands
 
-### Фронтенд
+### Frontend
 
 ```bash
 cd front
@@ -771,7 +775,7 @@ pnpm install
 pnpm dev  # http://localhost:3000
 ```
 
-### Бэкенд
+### Backend
 
 ```bash
 cd backend
@@ -779,7 +783,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-### Генерация типов
+### Type generation
 
 ```bash
 cd front
@@ -789,7 +793,7 @@ pnpm nuxt prepare
 
 ---
 
-## 14. Итоговая схема
+## 14. Final diagram
 
 ```md
 Browser
@@ -808,8 +812,8 @@ Browser
   │                                    │            JSON Response
   │                                    │
   │                                    ▼
-  │                              HTML с данными
+  │                              HTML with data
   │                              (__NUXT_DATA__)
   │
-  └── Гидратация ──────────────────► Vue App (SPA mode, без доп. запросов)
+  └── Hydration ──────────────────► Vue App (SPA mode, no extra requests)
 ```

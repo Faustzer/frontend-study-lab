@@ -18,7 +18,7 @@ export const mockTopicItems: TopicItem[] = [
   {
     slug: 'curry',
     title: 'Curry',
-    description: 'Каррирование функций',
+    description: 'Function currying',
     i18nTitleKey: 'modules.curry.title',
     i18nDescriptionKey: 'modules.curry.description',
     category: 'js-core',
@@ -35,7 +35,7 @@ export const mockTopicCategories: TopicCategory[] = [
   {
     slug: 'js-core',
     title: 'JavaScript Core',
-    description: 'Фундаментальные концепции JS',
+    description: 'Fundamental JS concepts',
     i18nTitleKey: 'categories.js-core.title',
     i18nDescriptionKey: 'categories.js-core.description',
     icon: '🟨',
@@ -45,7 +45,7 @@ export const mockTopicCategories: TopicCategory[] = [
   {
     slug: 'js-async',
     title: 'JavaScript Async',
-    description: 'Асинхронность в JavaScript',
+    description: 'Asynchrony in JavaScript',
     i18nTitleKey: 'categories.js-async.title',
     i18nDescriptionKey: 'categories.js-async.description',
     icon: '⚡',

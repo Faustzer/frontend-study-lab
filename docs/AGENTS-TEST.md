@@ -1,81 +1,81 @@
-# AGENTS-Test.md — Гайд по написанию тестов с AI
+# AGENTS-Test.md — Guide to Writing Tests with AI
 
-> Основано на [Vitest Guide: Writing Tests with AI](https://vitest.dev/guide/learn/writing-tests-with-ai.html)
+> Based on [Vitest Guide: Writing Tests with AI](https://vitest.dev/guide/learn/writing-tests-with-ai.html)
 
 ---
 
-## 1. Предоставление контекста
+## 1. Providing context
 
-### Что нужно дать AI для написания тестов
+### What the AI needs to write tests
 
-- **Исходный файл** — полный код тестируемой функции с типами и импортами
-- **Существующие тесты проекта** — чтобы AI следовал конвенциям проекта (`it` vs `test`, структура `describe`, стиль именования)
-- **Конфиг Vitest** — `vitest.config.ts` (globals, environment, setupFiles)
-- **Типы зависимостей** — сигнатуры моков, интерфейсы
+- **The source file** — full code of the function under test, with types and imports
+- **Existing project tests** — so the AI follows project conventions (`it` vs `test`, `describe` structure, naming style)
+- **Vitest config** — `vitest.config.ts` (globals, environment, setupFiles)
+- **Dependency types** — mock signatures, interfaces
 
-### Конвенции этого проекта
+### This project's conventions
 
 ```typescript
-// Используем it(), не test()
+// Use it(), not test()
 describe('functionName', () => {
   it('does something specific', () => {
     // Arrange -> Act -> Assert
   })
 })
 
-// Импорты без расширений .ts
+// Imports without .ts extensions
 import { foo } from '@/helpers/foo'
 
-// Моки в отдельном файле
+// Mocks live in a separate file
 import { mockItems } from '@/mocks/topics'
 
-// Типизация результата
+// Type the result
 const result: TopicCategory = buildCategory(slug, meta, items)
 ```
 
 ---
 
-## 2. Написание хороших промптов
+## 2. Writing good prompts
 
-### ❌ Плохой промпт
-
-```md
-Напиши тесты для useTopics
-```
-
-### ✅ Хороший промпт
+### ❌ Bad prompt
 
 ```md
-Напиши тесты для функции buildCategory из helpers/useTopics.ts.
-Проверь happy path с полными данными и edge case с пустым meta.
-Используй mockTopicItems из @/mocks/topics для items.
+Write tests for useTopics
 ```
 
-### Советы
+### ✅ Good prompt
 
-| Совет | Пример |
+```md
+Write tests for the buildCategory function from helpers/useTopics.ts.
+Cover the happy path with full data and the edge case with empty meta.
+Use mockTopicItems from @/mocks/topics for items.
+```
+
+### Tips
+
+| Tip | Example |
 |-------|--------|
-| Проси edge cases явно | "Включи тесты для пустых массивов, undefined, граничных значений" |
-| Указывай структуру | "Группируй тесты по функциям через describe блоки" |
-| Ссылайся на существующие тесты | "Следуй стилю из tests/useTopics.test.ts" |
-| Говори что НЕ делать | "Не мокируй модули, тестируй реальную реализацию" |
-| Используй короткие имена | `"returns empty array"` вместо `"should correctly return an empty array when given no items"` |
+| Ask for edge cases explicitly | "Include tests for empty arrays, undefined, boundary values" |
+| Specify the structure | "Group tests by function using describe blocks" |
+| Reference existing tests | "Follow the style of tests/useTopics.test.ts" |
+| Say what NOT to do | "Don't mock modules, test the real implementation" |
+| Use short names | `"returns empty array"` instead of `"should correctly return an empty array when given no items"` |
 
 ---
 
-## 3. Паттерн теста (Arrange -> Act -> Assert)
+## 3. Test pattern (Arrange -> Act -> Assert)
 
 ```typescript
 it('build TopicCategory from slug and metadata', () => {
-  // Arrange — подготовка данных
+  // Arrange — prepare the data
   const slug = 'js-core'
   const meta = { title: 'JavaScript Core', icon: '🟨', order: 1 }
   const items: TopicItem[] = mockItems
 
-  // Act — вызов функции
+  // Act — call the function
   const result: TopicCategory = buildCategory(slug, meta, items)
 
-  // Assert — проверка результата
+  // Assert — check the result
   expect(result.slug).toBe('js-core')
   expect(result.title).toBe('JavaScript Core')
   expect(result.items).toHaveLength(2)
@@ -84,106 +84,106 @@ it('build TopicCategory from slug and metadata', () => {
 
 ---
 
-## 4. Типизация в тестах
+## 4. Typing in tests
 
 ```typescript
-// ✅ Указывай тип результата
+// ✅ Type the result
 const result: TopicCategory = buildCategory(slug, meta, items)
 
-// ✅ Для массивов — выноси элементы в переменные
+// ✅ For arrays — pull elements into variables
 const first = result[0]
 expect(first.path).toBe('/js-core/bind')
 
-// ✅ Для опциональных полей — проверяй существование
+// ✅ For optional fields — check existence first
 expect(first.meta).toBeDefined()
 expect(first.meta!.category).toBe('js-core')
 ```
 
 ---
 
-## 5. Моки данных
+## 5. Data mocks
 
-### Структура
+### Structure
 
 ```md
 frontend/mocks/
-  topics.ts       — mockTopicItems, mockTopicCategories (данные для unit-тестов)
-  handlers.ts     — MSW-обработчики API (auth, progress)
-  browser.ts      — MSW worker для dev-режима
-  server.ts       — MSW server для тестов
+  topics.ts       — mockTopicItems, mockTopicCategories (data for unit tests)
+  handlers.ts     — MSW API handlers (auth, progress)
+  browser.ts      — MSW worker for dev mode
+  server.ts       — MSW server for tests
 ```
 
-### Принципы
+### Principles
 
-- Моки должны соответствовать типам (`TopicItem`, `TopicCategory`)
-- Все обязательные поля должны быть заполнены
-- Используй реалистичные данные
+- Mocks must match the types (`TopicItem`, `TopicCategory`)
+- All required fields must be filled
+- Use realistic data
 
 ---
 
-## 6. Типичные ошибки (Common Pitfalls)
+## 6. Common pitfalls
 
-| Ошибка | Решение |
+| Mistake | Fix |
 |--------|---------|
-| `jest.fn()` вместо `vi.fn()` | Используй Vitest API, не Jest |
-| `import { it } from 'vitest'` при `globals: true` | Не импортируй, если globals включены |
-| Моки не очищаются | Включи `restoreMocks: true` в конфиге |
-| Длинные имена тестов | Короткие, описывающие поведение |
-| `vitest` вместо `vitest run` в CI | Используй `vitest run` для однократного запуска |
-| `result[0].prop` без проверки | Сначала `expect(result).toHaveLength(N)` |
+| `jest.fn()` instead of `vi.fn()` | Use the Vitest API, not Jest |
+| `import { it } from 'vitest'` with `globals: true` | Don't import when globals are enabled |
+| Mocks not cleaned up | Enable `restoreMocks: true` in the config |
+| Long test names | Short, behavior-describing names |
+| `vitest` instead of `vitest run` in CI | Use `vitest run` for a single pass |
+| `result[0].prop` without a check | `expect(result).toHaveLength(N)` first |
 
 ---
 
-## 7. Ревью AI-сгенерированных тестов
+## 7. Reviewing AI-generated tests
 
-### Чек-лист
+### Checklist
 
-- [ ] **Тесты запускаются?** — всегда запускай `pnpm run test:run` перед коммитом
-- [ ] **Проверяют поведение, а не реализацию?** — не тестируй внутренние вызовы
-- [ ] **Есть edge cases?** — пустые данные, undefined, граничные значения
-- [ ] **Утверждения осмысленные?** — не `expect(x).toBeDefined()`, а конкретные значения
-- [ ] **Нет утечек моков?** — `vi.mock` не ломает другие тесты
-
----
-
-## 8. Workflow итераций
-
-1. Генерируй начальные тесты с конкретным промптом
-2. Запусти сразу — поймай ошибки
-3. Проверь каждый тест по чек-листу
-4. Попроси переписать проблемные секции
-5. Отредактируй вручную мелкие правки
+- [ ] **Do the tests run?** — always run `pnpm run test:run` before committing
+- [ ] **Do they test behavior, not implementation?** — don't assert internal calls
+- [ ] **Are edge cases covered?** — empty data, undefined, boundary values
+- [ ] **Are assertions meaningful?** — not `expect(x).toBeDefined()`, but concrete values
+- [ ] **No mock leaks?** — `vi.mock` doesn't break other tests
 
 ---
 
-## 9. Запуск тестов
+## 8. Iteration workflow
+
+1. Generate initial tests with a specific prompt
+2. Run them immediately — catch errors early
+3. Check every test against the checklist
+4. Ask to rewrite problematic sections
+5. Hand-edit the small stuff
+
+---
+
+## 9. Running tests
 
 ```bash
-# Watch-режим
+# Watch mode
 pnpm run test
 
-# Однократный прогон (как в CI)
+# Single pass (same as CI)
 pnpm run test:run
 
-# Конкретный файл
+# A specific file
 pnpm vitest run --config frontend/vitest.config.ts frontend/tests/useTopics.test.ts
 
-# E2E (Playwright; порт 5173 бывает занят — см. playwright.config.ts)
+# E2E (Playwright; port 5173 is sometimes taken — see playwright.config.ts)
 pnpm run test:e2e
 ```
 
 ---
 
-## 10. Текущая карта тестов
+## 10. Current test map
 
-| Где | Что покрыто |
+| Where | What it covers |
 |---|---|
-| `frontend/tests/` | Логика каталога топиков (`useTopics`), тосты (`useToast`) |
-| `frontend/api/__tests__/api.test.ts` | API-клиент через MSW (progress, auth, ошибки) |
-| `frontend/stores/__tests__/` | Pinia stores: progress (XP, уровни, персистентность) + progress-sync (очередь, MSW) |
-| `frontend/components/ui/__tests__/` | UI-кит (UiButton, UiProgressBar, UiSkeleton) |
-| `frontend/e2e/` | Playwright: home, topic, progress, i18n, auth (частично skip до полного OAuth) |
-| `backend/tests/` | pytest: JWT, auth-эндпоинты, OAuth-колбэки (мокированные провайдеры), прогресс |
+| `frontend/tests/` | Topic catalog logic (`useTopics`), toasts (`useToast`) |
+| `frontend/api/__tests__/api.test.ts` | API client via MSW (progress, auth, errors) |
+| `frontend/stores/__tests__/` | Pinia stores: progress (XP, levels, persistence) + progress-sync (queue, MSW) |
+| `frontend/components/ui/__tests__/` | UI kit (UiButton, UiProgressBar, UiSkeleton) |
+| `frontend/e2e/` | Playwright: home, topic, progress, i18n, auth (partially skipped until full OAuth) |
+| `backend/tests/` | pytest: JWT, auth endpoints, OAuth callbacks (mocked providers), progress |
 
-Бэкенд-тесты запускаются из `backend/`: `.venv/bin/python -m pytest tests/ -q`
-(SQLite in-memory, реальные провайдеры не вызываются).
+Backend tests run from `backend/`: `.venv/bin/python -m pytest tests/ -q`
+(in-memory SQLite, real providers are never called).

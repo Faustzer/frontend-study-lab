@@ -1,138 +1,139 @@
-# План миграции: Vue 3 SPA → Nuxt 4
+# Migration Plan: Vue 3 SPA → Nuxt 4
 
-> Обновлено 2026-07-10. Исходная версия этого плана предполагала порядок
-> «Nuxt → бэкенд → интеграция», но проект пошёл другим путём: бэкенд (FastAPI),
-> авторизация, синхронизация прогресса, CI/CD и прод-деплой уже реализованы
-> в текущей Vue 3 SPA. Осталась только сама миграция на Nuxt — этот документ
-> описывает достижимый путь для неё.
+> Updated 2026-07-10. The original version of this plan assumed the order
+> "Nuxt → backend → integration", but the project went the other way: the
+> backend (FastAPI), authentication, progress sync, CI/CD, and production
+> deploy are already implemented in the current Vue 3 SPA. Only the Nuxt
+> migration itself remains — this document describes an achievable path for it.
 
-## Что уже сделано (вне этого плана)
+## Already done (outside this plan)
 
-| Было в старом плане | Статус | Где |
+| Old plan item | Status | Where |
 |---|---|---|
-| Фаза 2: FastAPI бэкенд | ✅ в проде (Railway) | `backend/`, `plan-backend.md` |
-| Фаза 3: интеграция фронт+бэк | ✅ | `api/client.ts`, stores, offline-очередь |
-| Фаза 3.3: аутентификация | ✅ (Google OAuth в проде) | `AUTH.md` |
-| Фаза 4.1: профиль | ✅ | `pages/ProfilePage.vue` |
-| Фаза 4.2: skeletons, ошибки | ✅ | `UiSkeleton`, `PageSkeleton`, toasts |
-| Фаза 4.4: CI/CD | ✅ | `ci.yml`, `backend-ci.yml`, `deploy.yml` (Pages) |
+| Phase 2: FastAPI backend | ✅ in prod (Railway) | `backend/`, `plan-backend.md` |
+| Phase 3: frontend+backend integration | ✅ | `api/client.ts`, stores, offline queue |
+| Phase 3.3: authentication | ✅ (Google OAuth in prod) | `AUTH.md` |
+| Phase 4.1: user profile | ✅ | `pages/ProfilePage.vue` |
+| Phase 4.2: skeletons, error handling | ✅ | `UiSkeleton`, `PageSkeleton`, toasts |
+| Phase 4.4: CI/CD | ✅ | `ci.yml`, `backend-ci.yml`, `deploy.yml` (Pages) |
 
 ---
 
-## Вектор: зачем и куда мигрируем
+## Vector: why and where we are migrating
 
-**Цели миграции** (в порядке важности):
+**Migration goals** (in order of importance):
 
-1. **SEO для страниц топиков** — сейчас SPA отдаёт пустой HTML; пререндер
-   даст поисковикам контент. Для учебной платформы это основной трафик.
-2. **DX Nuxt** — file-based routing, layouts, auto-imports вместо ручного
-   `router.ts` и glob-магии в `useTopics`.
-3. **Изучение Nuxt** — проект в том числе учебный.
+1. **SEO for topic pages** — the SPA currently serves empty HTML; prerendering
+   gives search engines real content. For a learning platform this is the main
+   traffic source.
+2. **Nuxt DX** — file-based routing, layouts, and auto-imports instead of the
+   hand-written `router.ts` and glob magic in `useTopics`.
+3. **Learning Nuxt** — the project is educational by nature.
 
-**Ключевое ограничение — хостинг.** Прод-фронтенд живёт на GitHub Pages
-(статика), бэкенд + Postgres занимают free tier Railway (~1GB). Полноценный
-SSR требует Node-сервер, которого бесплатно нет. Поэтому:
+**The key constraint is hosting.** The production frontend lives on GitHub
+Pages (static), and the backend + Postgres occupy the Railway free tier (~1GB).
+Full SSR requires a Node server, which we don't have for free. Therefore:
 
 ```
-Достижимый путь:   SPA (Vue) → Nuxt SPA-режим → Nuxt SSG (nuxt generate)
-                                                  └─ остаётся статикой,
-                                                     деплой на Pages не меняется
+Achievable path:   SPA (Vue) → Nuxt SPA mode → Nuxt SSG (nuxt generate)
+                                                └─ stays static,
+                                                   Pages deploy unchanged
 
-Отложено:          Nuxt SSR/hybrid (routeRules с ssr:true на сервере)
-                   └─ только если появится Node-хостинг (NuxtHub /
-                      Cloudflare Workers / платный Railway)
+Deferred:          Nuxt SSR/hybrid (routeRules with ssr:true on a server)
+                   └─ only if Node hosting appears (NuxtHub /
+                      Cloudflare Workers / paid Railway)
 ```
 
-SSG закрывает цель №1 (SEO): публичные страницы (главная, топики)
-пререндерятся при сборке, а всё интерактивное (прогресс, профиль, авторизация)
-гидратируется на клиенте — как сейчас. Контент топиков статичен по своей
-природе, поэтому SSG здесь эквивалентен SSR без затрат на сервер.
+SSG covers goal #1 (SEO): public pages (home, topics) are prerendered at build
+time, while everything interactive (progress, profile, auth) hydrates on the
+client — same as today. Topic content is inherently static, so SSG here is
+equivalent to SSR without paying for a server.
 
-**Версия Nuxt: 4.x** (стабильна с 2025; старая рекомендация «оставаться на
-3.12» устарела). Модули: `@pinia/nuxt`, `@nuxtjs/i18n` v10+, `@nuxt/test-utils`.
+**Nuxt version: 4.x** (stable since 2025; the old "stay on 3.12" advice is
+outdated). Modules: `@pinia/nuxt`, `@nuxtjs/i18n` v10+, `@nuxt/test-utils`.
 
 ---
 
-## Фаза 0: Подготовка (~1 день)
+## Phase 0: Preparation (~1 day)
 
-- [ ] Все чеки зелёные: `pnpm run lint && pnpm run typecheck && pnpm run test:run && pnpm run build`
-- [ ] Прогнать e2e: `pnpm run test:e2e` — это регрессионная сетка миграции
-- [ ] Зафиксировать состояние: `git tag v1.0.0-spa`
-- [ ] Миграцию вести в долгоживущей ветке `feat/nuxt-migration`, мержить в main
-      только когда e2e проходят против Nuxt-сборки
+- [ ] All checks green: `pnpm run lint && pnpm run typecheck && pnpm run test:run && pnpm run build`
+- [ ] Run e2e: `pnpm run test:e2e` — this is the migration's regression net
+- [ ] Snapshot the state: `git tag v1.0.0-spa`
+- [ ] Do the migration in a long-lived `feat/nuxt-migration` branch; merge to
+      main only when e2e passes against the Nuxt build
 
-## Фаза 1: Nuxt-скелет в SPA-режиме (~2-4 дня)
+## Phase 1: Nuxt skeleton in SPA mode (~2-4 days)
 
-Цель фазы: приложение работает на Nuxt с `ssr: false` — поведение идентично
-текущему, меняется только каркас. Никакого SSR-кода на этом шаге.
+Goal: the app runs on Nuxt with `ssr: false` — behavior identical to today,
+only the scaffolding changes. No SSR code at this step.
 
 - [ ] `pnpm add nuxt@^4 @pinia/nuxt @nuxtjs/i18n && pnpm add -D @nuxt/test-utils`
-- [ ] `nuxt.config.ts`: `ssr: false`, alias `@/` → `frontend/`, SCSS через
-      `css` + `vite.css.preprocessorOptions` (variables/mixins в additionalData)
-- [ ] `App.vue` → `app.vue` + `layouts/default.vue` (sidebar, header, footer, модалки)
+- [ ] `nuxt.config.ts`: `ssr: false`, alias `@/` → `frontend/`, SCSS via
+      `css` + `vite.css.preprocessorOptions` (variables/mixins in additionalData)
+- [ ] `App.vue` → `app.vue` + `layouts/default.vue` (sidebar, header, footer, modals)
 - [ ] `pages/index.vue` (HomePage), `pages/profile.vue`, `pages/auth/callback.vue`
-- [ ] Топики: `pages/[category]/[module].vue` — динамический роут поверх
-      существующего `useTopics` (glob-каталог оставить, он источник данных)
-- [ ] Удалить `router.ts`; guard из `useAuthGuard` → `middleware/auth.global.ts`
-- [ ] `main.ts` → `plugins/` (Pinia persistedstate, MSW для dev)
-- [ ] Проверка: `nuxt dev` + все e2e зелёные
+- [ ] Topics: `pages/[category]/[module].vue` — dynamic route on top of the
+      existing `useTopics` (keep the glob catalog, it is the data source)
+- [ ] Delete `router.ts`; move the `useAuthGuard` guard to `middleware/auth.global.ts`
+- [ ] `main.ts` → `plugins/` (Pinia persistedstate, MSW for dev)
+- [ ] Verify: `nuxt dev` + all e2e green
 
-## Фаза 2: i18n, stores, API (~2-3 дня)
+## Phase 2: i18n, stores, API (~2-3 days)
 
-- [ ] `@nuxtjs/i18n`: locales en/ru, `defineI18nConfig`, сохранить ключи как есть
-      (компоненты используют `useI18n().t()` — совместимо)
-- [ ] Stores без изменений (`@pinia/nuxt` + persistedstate); убрать ручную регистрацию
-- [ ] `api/client.ts`: оставить как есть ИЛИ перевести на `$fetch` — решить по факту;
-      обязательного требования нет, 401-interceptor и token должны сохраниться
+- [ ] `@nuxtjs/i18n`: en/ru locales, `defineI18nConfig`, keep keys as-is
+      (components use `useI18n().t()` — compatible)
+- [ ] Stores unchanged (`@pinia/nuxt` + persistedstate); drop manual registration
+- [ ] `api/client.ts`: keep as-is OR move to `$fetch` — decide on the spot;
+      no hard requirement, the 401 interceptor and token handling must survive
 - [ ] `VITE_API_URL` → `runtimeConfig.public.apiBase` (env `NUXT_PUBLIC_API_BASE`)
-- [ ] Проверка: dev против локального бэкенда (`pnpm run dev-wait`), логин через
-      dev-login, синк прогресса
+- [ ] Verify: dev against the local backend (`pnpm run dev-wait`), log in via
+      dev-login, progress sync works
 
-## Фаза 3: Тесты (~1-2 дня)
+## Phase 3: Tests (~1-2 days)
 
-- [ ] `vitest.config.ts` → `defineVitestConfig` из `@nuxt/test-utils/config`
-- [ ] Все unit-тесты проходят (auto-imports могут потребовать правок импортов)
-- [ ] e2e: обновить селекторы, если разметка layout изменилась; все зелёные
+- [ ] `vitest.config.ts` → `defineVitestConfig` from `@nuxt/test-utils/config`
+- [ ] All unit tests pass (auto-imports may require import fixes)
+- [ ] e2e: update selectors if the layout markup changed; all green
 
-## Фаза 4: SSG и деплой (~1-2 дня)
+## Phase 4: SSG and deploy (~1-2 days)
 
-- [ ] `ssr: true` + `nitro.prerender` / `routeRules` с `prerender: true` для
-      `/` и всех `/{category}/{module}` (список маршрутов генерировать из каталога топиков)
-- [ ] Страницы с клиентским состоянием: `/profile`, `/auth/callback` — `ssr: false`
-- [ ] Guard на SSR-безопасность: доступ к `localStorage`/`window` только в
-      `onMounted` / `import.meta.client` (stores персистентности!)
-- [ ] `nuxt generate` → `deploy.yml`: заменить `vite build` на generate,
-      публиковать `.output/public` на Pages (404.html fallback сохранить)
-- [ ] Проверить SEO: `curl` страницы топика отдаёт контент в HTML
+- [ ] `ssr: true` + `nitro.prerender` / `routeRules` with `prerender: true` for
+      `/` and every `/{category}/{module}` (generate the route list from the topic catalog)
+- [ ] Pages with client state: `/profile`, `/auth/callback` — `ssr: false`
+- [ ] SSR-safety guard: access `localStorage`/`window` only in
+      `onMounted` / `import.meta.client` (store persistence!)
+- [ ] `nuxt generate` → `deploy.yml`: replace `vite build` with generate,
+      publish `.output/public` to Pages (keep the 404.html fallback)
+- [ ] Verify SEO: `curl` of a topic page returns content in the HTML
 - [ ] `git tag v2.0.0-nuxt`
 
-## Фаза 5 (отложено): настоящий SSR
+## Phase 5 (deferred): real SSR
 
-Не планируется, пока хостинг статический. Триггер для возврата к этой фазе —
-переезд фронтенда на Node-хостинг. Тогда: `routeRules` (`/` и топики — SSR,
-кабинет — SPA), серверный прокси `/api/**` → FastAPI, cookie-auth вместо
-localStorage. Паттерны — в `ARCHITECTURE-EXAMPLE.md`.
+Not planned while hosting is static. The trigger to revisit this phase is
+moving the frontend to Node hosting. Then: `routeRules` (`/` and topics — SSR,
+profile — SPA), a server proxy `/api/**` → FastAPI, cookie auth instead of
+localStorage. Patterns are in `ARCHITECTURE-EXAMPLE.md`.
 
 ---
 
-## Риски
+## Risks
 
-| Риск | Вероятность | Митигция |
+| Risk | Likelihood | Mitigation |
 |---|---|---|
-| `import.meta.glob` топиков не заведётся в Nuxt как есть | Средняя | Фаза 1: каталог остаётся во Vite-плагине Nuxt; в крайнем случае — генерация списка скриптом (как `backend/scripts/gen_catalog.py`) |
-| persistedstate/localStorage ломает SSG-пререндер | Высокая | `ssr: false` для страниц с состоянием; обращения к window только на клиенте |
-| e2e завязаны на текущую разметку | Низкая | Разметка переносится как есть; чинить селекторы по факту |
-| Миграция затянется и заблокирует фичи | Средняя | Ветка `feat/nuxt-migration`; main живёт своей жизнью; фазы 1-4 мержатся одним PR только целиком зелёными |
+| Topic `import.meta.glob` doesn't work in Nuxt as-is | Medium | Phase 1: the catalog stays in Nuxt's Vite layer; worst case — generate the list with a script (like `backend/scripts/gen_catalog.py`) |
+| persistedstate/localStorage breaks SSG prerender | High | `ssr: false` for stateful pages; touch window only on the client |
+| e2e is coupled to current markup | Low | Markup is ported as-is; fix selectors as needed |
+| Migration drags on and blocks features | Medium | `feat/nuxt-migration` branch; main lives its own life; phases 1-4 merge as one PR only when fully green |
 
-## Критерий готовности
+## Definition of done
 
-Миграция завершена, когда: все unit + e2e зелёные против Nuxt-сборки,
-`curl https://study.faustze.tech/js-core/bind` отдаёт HTML с контентом топика,
-логин/прогресс/оффлайн-очередь работают как до миграции.
+The migration is complete when: all unit + e2e tests are green against the
+Nuxt build, `curl https://study.faustze.tech/js-core/bind` returns HTML with
+topic content, and login/progress/offline queue work exactly as before.
 
-## Связанные документы
+## Related documents
 
-- [plan-frontend.md](plan-frontend.md) — план текущей SPA (закрыт)
-- [plan-backend.md](plan-backend.md) — план бэкенда (закрыт, кроме Twitch/Discord)
-- [ARCHITECTURE-EXAMPLE.md](ARCHITECTURE-EXAMPLE.md) — референс Nuxt+FastAPI и сравнение с текущей архитектурой
-- [AUTH.md](AUTH.md) — устройство авторизации
+- [plan-frontend.md](plan-frontend.md) — current SPA plan (closed)
+- [plan-backend.md](plan-backend.md) — backend plan (closed except Twitch/Discord)
+- [ARCHITECTURE-EXAMPLE.md](ARCHITECTURE-EXAMPLE.md) — Nuxt+FastAPI reference and comparison with the current architecture
+- [AUTH.md](AUTH.md) — how authentication works

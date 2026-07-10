@@ -46,7 +46,7 @@ function defaultProgress(): UserProgress {
   }
 }
 
-/** Сколько XP нужно для уровня N */
+/** XP required to reach level N */
 function xpForLevel(level: number): number {
   return Math.floor(100 * 1.5 ** (level - 1))
 }
@@ -64,7 +64,7 @@ export const useProgressStore = defineStore('progress', () => {
    */
   const isOnline = ref(true)
 
-  // Сохраняем в localStorage при каждом изменении
+  // Persist to localStorage on every change
   watch(progress, (val) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
   }, { deep: true })
@@ -125,7 +125,7 @@ export const useProgressStore = defineStore('progress', () => {
   function addXp(amount: number) {
     progress.value.xp += amount
 
-    // Проверяем повышение уровня
+    // Check for level-up
     while (progress.value.xp >= progress.value.xpToNextLevel) {
       progress.value.xp -= progress.value.xpToNextLevel
       progress.value.level += 1

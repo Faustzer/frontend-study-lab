@@ -58,7 +58,7 @@ const codeExample = [
   '  return a + b',
   '})',
   '',
-  'expensiveSum(10, 15) // считает → 25',
-  'expensiveSum(10, 15) // из кеша → 25',
+  'expensiveSum(10, 15) // computes → 25',
+  'expensiveSum(10, 15) // from cache → 25',
 ].join('\n')
 </script>
