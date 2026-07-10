@@ -43,7 +43,7 @@ type CallbackStatus = 'loading' | 'success' | 'error'
 const status = ref<CallbackStatus>('loading')
 
 function goHome() {
-  router.push({ name: 'home' })
+  router.push('/')
 }
 
 onMounted(() => {
@@ -55,7 +55,7 @@ onMounted(() => {
     void progress.syncWithBackend()
     // Redirect to home after a brief delay so the user sees the success state
     setTimeout(() => {
-      router.push({ name: 'home' })
+      router.push('/')
     }, 800)
   } else {
     status.value = 'error'

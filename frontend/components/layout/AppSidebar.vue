@@ -115,6 +115,6 @@ function isCompleted(slug: string) {
 
 async function handleLogout() {
   await auth.logout()
-  router.push({ name: 'home' })
+  router.push('/')
 }
 </script>

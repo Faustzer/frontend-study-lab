@@ -39,7 +39,10 @@ test.describe('Progress flow', () => {
     await page.getByRole('button', { name: /Complete module/ }).click()
 
     await page.reload()
-    await page.getByText('bind').click()
+    // After reload we are still on the bind page; re-click via the sidebar
+    // link specifically — plain getByText('bind') also matches the page
+    // title and code examples once the topic content renders
+    await page.getByRole('link', { name: /^Bind/ }).click()
 
     // Should still show as completed
     await expect(page.getByRole('button', { name: /Completed/ })).toBeVisible()

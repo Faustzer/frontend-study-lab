@@ -17,3 +17,6 @@ test-results
 __pycache__/
 *.pyc
 .venv/
+.nuxt
+.output
+.data

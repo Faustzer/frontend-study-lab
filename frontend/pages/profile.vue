@@ -44,6 +44,8 @@ import UserCard from '@/components/profile/UserCard.vue'
 import ProgressStats from '@/components/profile/ProgressStats.vue'
 import UiButton from '@/components/ui/UiButton.vue'
 
+definePageMeta({ requiresAuth: true })
+
 const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
@@ -58,7 +60,7 @@ function humanize(slug: string): string {
 
 async function handleLogout() {
   await auth.logout()
-  router.push({ name: 'home' })
+  router.push('/')
 }
 </script>
 

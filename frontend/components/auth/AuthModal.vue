@@ -46,7 +46,7 @@ const mockUser: User = {
 function devLogin() {
   auth.setSession('dev-mock-token', mockUser)
   ui.closeAuthModal()
-  router.push({ name: 'home' })
+  router.push('/')
 }
 </script>
 

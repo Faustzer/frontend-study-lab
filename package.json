@@ -8,28 +8,33 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --config frontend/vite.config.ts",
+    "dev": "nuxt dev",
     "dev-wait": "wait-on tcp:5433 http-get://localhost:8000/health && pnpm run dev",
-    "build": "vue-tsc --project frontend/tsconfig.app.json --noEmit && vite build --config frontend/vite.config.ts",
-    "preview": "vite preview --config frontend/vite.config.ts",
-    "typecheck": "vue-tsc --project frontend/tsconfig.app.json --noEmit",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
     "lint": "eslint --config frontend/eslint.config.mjs frontend/",
     "lint:fix": "eslint --config frontend/eslint.config.mjs frontend/ --fix",
     "test": "vitest --config frontend/vitest.config.ts",
     "test:run": "vitest run --config frontend/vitest.config.ts",
     "test:e2e": "playwright test --config frontend/playwright.config.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate": "nuxt generate",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.11.3",
+    "nuxt": "^4.4.8",
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.7.1",
     "vue": "^3.5.39",
     "vue-i18n": "^9.14.5",
-    "vue-router": "^4.5.1"
+    "vue-router": "^5.1.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.1.0",
     "@iconify/vue": "^5.0.1",
+    "@nuxt/test-utils": "^4.0.3",
     "@playwright/test": "^1.61.1",
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^26.1.1",
