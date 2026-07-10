@@ -10,7 +10,7 @@
 | Aspect | Reference (this document) | frontend-study-lab (today) |
 |---|---|---|
 | Framework | Nuxt 3/4 (SSR + SPA hybrid) | Vue 3 SPA (Vite) |
-| Rendering | `routeRules`: public — SSR, cabinet — SPA | Everything SPA; no SEO |
+| Rendering | `routeRules`: public — SSR, profile — SPA | Everything SPA; no SEO |
 | Frontend hosting | Node server (Nitro) | GitHub Pages (static) |
 | UI | Vuetify (Material) | Own UI kit (`components/ui/`) + SCSS |
 | State | Pinia (options API stores) | Pinia (setup stores) + persistedstate |
@@ -47,7 +47,7 @@
 
 The application is built on **Nuxt 3 (Vue 3)** on the frontend and
 **FastAPI (Python)** on the backend. It uses an **SSR + SPA hybrid** pattern:
-public pages are server-rendered for SEO, while the user cabinet and auth run
+public pages are server-rendered for SEO, while the user profile and auth run
 as an SPA.
 
 ```md
@@ -56,7 +56,7 @@ as an SPA.
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │  Nuxt 3 App (Vue 3 + Pinia + Vuetify)                    │  │
 │  │  - SSR for public pages                                   │  │
-│  │  - SPA for /cabinet and /auth                             │  │
+│  │  - SPA for /profile and /auth                             │  │
 │  │  - useAsyncData for server-side data loading              │  │
 │  │  - mainApi for client requests with CSRF + Auth           │  │
 │  └───────────────────────────────────────────────────────────┘  │
@@ -189,8 +189,7 @@ export default defineNuxtConfig(<{ openFetch: ModuleOptions } & NuxtConfig>{
   // Route rules — which pages are SSR and which are SPA
   routeRules: {
     "/": { ssr: true }, // Home — SSR (SEO)
-    "/news/**": { ssr: true }, // News — SSR
-    "/cabinet/**": { ssr: false }, // Cabinet — SPA
+    "/profile/**": { ssr: false }, // Profile — SPA
     "/auth/**": { ssr: false }, // Auth — SPA
   },
 
@@ -384,7 +383,7 @@ import { useAuthStore } from "~/stores/auth";
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore();
-  const isProtected = to.path.startsWith("/cabinet");
+  const isProtected = to.path.startsWith("/profile");
   const isAuthRoute = to.path.startsWith("/auth/");
 
   // Unauthenticated user heading to a protected route → login
@@ -719,8 +718,7 @@ pydantic==2.9.0
 // nuxt.config.ts
 routeRules: {
   '/': { ssr: true },           // Public — SSR (SEO)
-  '/news/**': { ssr: true },    // Content — SSR
-  '/cabinet/**': { ssr: false }, // Cabinet — SPA
+  '/profile/**': { ssr: false }, // profile — SPA
   '/auth/**': { ssr: false },    // Auth — SPA
 }
 ```

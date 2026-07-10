@@ -5,8 +5,9 @@
     </p>
     <div class="auth-modal__buttons">
       <AuthButton provider="google" />
-      <AuthButton provider="twitch" />
-      <AuthButton provider="discord" />
+      <!-- Twitch/Discord OAuth is not configured on the backend yet -->
+      <!-- <AuthButton provider="twitch" /> -->
+      <!-- <AuthButton provider="discord" /> -->
     </div>
     <button v-if="isDev" class="auth-modal__dev" @click="devLogin">
       🛠 Dev Login (mock)
