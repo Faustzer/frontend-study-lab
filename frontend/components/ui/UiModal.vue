@@ -2,7 +2,7 @@
   <Teleport to="body">
     <Transition name="ui-modal">
       <div v-if="open" class="ui-modal-overlay" @click="onOverlayClick">
-        <div class="ui-modal" :class="`ui-modal--${size}`" role="dialog" aria-modal="true">
+        <div ref="modalEl" class="ui-modal" :class="`ui-modal--${size}`" role="dialog" aria-modal="true" tabindex="-1">
           <div class="ui-modal__header">
             <h3 v-if="title" class="ui-modal__title">
               {{ title }}
@@ -24,13 +24,15 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick, onUnmounted, ref, watch } from 'vue'
+
 export interface UiModalProps {
   open: boolean
   title?: string
   size?: 'sm' | 'md' | 'lg'
 }
 
-withDefaults(defineProps<UiModalProps>(), {
+const props = withDefaults(defineProps<UiModalProps>(), {
   size: 'md',
 })
 
@@ -38,11 +40,55 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const modalEl = ref<HTMLElement | null>(null)
+let previouslyFocused: HTMLElement | null = null
+
 function onOverlayClick(event: MouseEvent) {
   if (event.target === event.currentTarget) {
     emit('close')
   }
 }
+
+function onKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    emit('close')
+    return
+  }
+  // Trap Tab inside the dialog
+  if (event.key === 'Tab' && modalEl.value) {
+    const focusable = modalEl.value.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    )
+    if (focusable.length === 0)
+      return
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
+  }
+}
+
+watch(() => props.open, async (open) => {
+  if (open) {
+    previouslyFocused = document.activeElement as HTMLElement | null
+    document.addEventListener('keydown', onKeydown)
+    await nextTick()
+    modalEl.value?.focus()
+  } else {
+    document.removeEventListener('keydown', onKeydown)
+    previouslyFocused?.focus()
+    previouslyFocused = null
+  }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', onKeydown)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -57,6 +103,7 @@ function onOverlayClick(event: MouseEvent) {
   justify-content: center;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
+  padding: $space-md;
 }
 
 .ui-modal {
@@ -67,6 +114,8 @@ function onOverlayClick(event: MouseEvent) {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  max-width: 100%;
 
   &--sm {
     width: 400px;

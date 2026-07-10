@@ -21,6 +21,10 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-top: 22px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
 }
 
 .lesson-card {
@@ -80,6 +84,7 @@
 /* ===== Actions (buttons row) ===== */
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin: 16px 0;
 
@@ -105,6 +110,10 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
 }
 
 .object-card {

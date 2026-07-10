@@ -147,7 +147,7 @@
     left: 0;
     bottom: 0;
     z-index: 200;
-    background-color: $color-bg-card;
+    background-color: $color-bg;
     transform: translateX(-100%);
     transition: transform 0.25s ease;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
@@ -357,21 +357,29 @@
 
 .category {
   h2 {
+    margin: 0 0 8px;
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+
+  .cat-toggle {
+    width: 100%;
+    font-family: inherit;
     font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: $color-text-faint;
-    margin: 0 0 8px;
     display: flex;
     align-items: center;
     gap: 6px;
     cursor: pointer;
     user-select: none;
+    background: none;
+    border: none;
     border-radius: 8px;
     padding: 6px 8px;
-    margin-left: -8px;
-    margin-right: -8px;
+    text-align: left;
     transition: background 0.15s;
 
     &:hover {

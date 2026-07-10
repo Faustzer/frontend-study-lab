@@ -30,6 +30,7 @@ export const useUiStore = defineStore('ui', () => {
   const mobileSidebarOpen = ref(false)
   const theme = ref<Theme>(loadTheme())
   const authModalOpen = ref(false)
+  const routeLoading = ref(false)
 
   // Persist collapsed categories
   watch(collapsedCategories, (val) => {
@@ -86,6 +87,10 @@ export const useUiStore = defineStore('ui', () => {
     } catch { /* ignore */ }
   }
 
+  function setRouteLoading(value: boolean) {
+    routeLoading.value = value
+  }
+
   function shouldShowAuthModal(): boolean {
     try {
       return localStorage.getItem(AUTH_MODAL_KEY) !== '1'
@@ -98,7 +103,9 @@ export const useUiStore = defineStore('ui', () => {
     mobileSidebarOpen,
     theme,
     authModalOpen,
+    routeLoading,
     sidebarCollapsed,
+    setRouteLoading,
     toggleCategory,
     isCategoryCollapsed,
     openMobileSidebar,

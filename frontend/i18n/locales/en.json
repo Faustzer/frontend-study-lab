@@ -13,7 +13,10 @@
     "practiceFirst": "Practice-first learning",
     "tagline": "Minimum theory — maximum practice. Solve tasks, earn XP, level up.",
     "language": "Language",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "toggleMenu": "Toggle navigation menu",
+    "skipToContent": "Skip to content",
+    "loading": "Loading"
   },
   "difficulty": {
     "easy": "Easy",

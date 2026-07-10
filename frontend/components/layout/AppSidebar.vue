@@ -10,7 +10,7 @@
             </div>
           </RouterLink>
         </nav>
-        <button class="theme-toggle" :title="t('common.toggleTheme')" @click="ui.toggleTheme()">
+        <button class="theme-toggle" :title="t('common.toggleTheme')" :aria-label="t('common.toggleTheme')" @click="ui.toggleTheme()">
           {{ ui.theme === 'dark' ? '☀️' : '🌙' }}
         </button>
         <LanguageSwitcher />
@@ -54,11 +54,17 @@
         v-for="cat in categories" :key="cat.slug" class="category"
         :class="{ collapsed: ui.isCategoryCollapsed(cat.slug) }"
       >
-        <h2 @click="ui.toggleCategory(cat.slug)">
-          <span class="cat-arrow" :class="{ open: !ui.isCategoryCollapsed(cat.slug) }">▸</span>
-          <span class="cat-icon">{{ cat.icon }}</span>
-          <span class="cat-title">{{ t(`categories.${cat.slug}.title`) }}</span>
-          <span class="cat-count">{{ cat.items.length }}</span>
+        <h2>
+          <button
+            class="cat-toggle"
+            :aria-expanded="!ui.isCategoryCollapsed(cat.slug)"
+            @click="ui.toggleCategory(cat.slug)"
+          >
+            <span class="cat-arrow" :class="{ open: !ui.isCategoryCollapsed(cat.slug) }">▸</span>
+            <span class="cat-icon">{{ cat.icon }}</span>
+            <span class="cat-title">{{ t(`categories.${cat.slug}.title`) }}</span>
+            <span class="cat-count">{{ cat.items.length }}</span>
+          </button>
         </h2>
         <ul v-show="!ui.isCategoryCollapsed(cat.slug)">
           <li v-for="item in cat.items" :key="item.slug" class="topic-li">

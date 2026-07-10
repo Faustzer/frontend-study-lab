@@ -213,10 +213,10 @@
 - [x] Add dark mode toggle
 - [x] Add animations (page transitions, XP gain animation)
 - [x] Add toast notifications (success/error messages)
-- [ ] Improve mobile responsiveness
-- [ ] Add keyboard navigation support
-- [ ] Add loading skeletons
-- [ ] Shadcn init (?)
+- [x] Improve mobile responsiveness (responsive modal, topic grids collapse on mobile)
+- [x] Add keyboard navigation support (focus-visible styles, skip link, sidebar category buttons with `aria-expanded`, modal Escape + focus trap)
+- [x] Add loading skeletons (`UiSkeleton`, `PageSkeleton` shown while lazy route chunks load)
+- ~~Shadcn init~~ — rejected: project has its own UI kit (`components/ui/`)
 
 ### 4.2 Performance
 
@@ -231,5 +231,5 @@
   - [x] Type check (vue-tsc)
   - [x] Unit tests
   - [x] Build check
-- [ ] Create `.github/workflows/deploy.yml`:
-  - [ ] Deploy frontend to Railway on push to main
+- [x] Create `.github/workflows/deploy.yml`:
+  - [x] Deploy frontend to GitHub Pages (study.faustze.tech) after CI passes on main
