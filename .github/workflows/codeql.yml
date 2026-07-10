@@ -1,0 +1,58 @@
+name: CodeQL
+
+# Replaces both dynamic workflows from repo settings (CodeQL default setup +
+# Code Quality beta): one run per event covers security and quality queries.
+# Requires default setup to be disabled in Settings -> Advanced Security,
+# otherwise SARIF uploads from this workflow are rejected.
+#
+# The code-quality analysis kind is GitHub-internal and not supported in
+# custom workflows; per the codeql-action deprecation notice, quality
+# queries run here via `queries: security-and-quality` instead, and their
+# findings land in the code scanning alerts list.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '30 4 * * 6' # weekly, Saturday 04:30 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            # quality queries only exist for the app languages
+            queries: security-extended
+          - language: javascript-typescript
+            queries: security-and-quality
+          - language: python
+            queries: security-and-quality
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          queries: ${{ matrix.queries }}
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:${{ matrix.language }}'
