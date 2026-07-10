@@ -1,4 +1,46 @@
-# Nuxt 3 + FastAPI — Архитектура Fullstack приложения
+# Nuxt 3 + FastAPI — Архитектура Fullstack приложения (референс)
+
+> Это описание архитектуры **другого** production-приложения — референс для
+> миграции frontend-study-lab на Nuxt (см. `MIGRATION.md`). Ниже — сравнение
+> с текущей архитектурой проекта: что совпадает, что отличается и что стоит
+> перенимать.
+
+## 0. Сравнение с текущей архитектурой frontend-study-lab
+
+| Аспект | Референс (этот документ) | frontend-study-lab (сейчас) |
+|---|---|---|
+| Фреймворк | Nuxt 3/4 (SSR + SPA hybrid) | Vue 3 SPA (Vite) |
+| Рендеринг | `routeRules`: публичное — SSR, кабинет — SPA | Всё — SPA; SEO нет |
+| Хостинг фронта | Node-сервер (Nitro) | GitHub Pages (статика) |
+| UI | Vuetify (Material) | Свой UI-кит (`components/ui/`) + SCSS |
+| State | Pinia (options API stores) | Pinia (setup stores) + persistedstate |
+| API-клиент | `$fetch` + nuxt-open-fetch, авто-retry при 401 | Свой fetch-обёртка `api/client.ts`, 401 → модалка |
+| Связь с бэком | Nitro-прокси `/api/**` → FastAPI (без CORS) | Прямые запросы на Railway URL + CORS middleware |
+| Auth-токены | Access + refresh в cookies, CSRF-cookie | JWT (7 дней) в localStorage, без refresh |
+| CSRF | Cookie `XSRF-TOKEN` на каждый запрос | Только OAuth `state` (для callback) |
+| Типизация API | Автогенерация из OpenAPI (nuxt-open-fetch) | Ручные типы `api/types.ts`, зеркалят Pydantic |
+| Аутентификация | Email/password + refresh flow | OAuth-only (Google; Twitch/Discord позже) |
+| i18n | @nuxtjs/i18n | vue-i18n напрямую |
+| Бэкенд | FastAPI, python-jose | FastAPI, PyJWT + authlib, SQLAlchemy async + alembic |
+
+**Что стоит перенять при миграции (фазы см. в MIGRATION.md):**
+
+- `routeRules` / пререндер публичных страниц — главная цель миграции (SEO);
+  в нашем случае через SSG, а не SSR-сервер (хостинг статический).
+- `nuxt-open-fetch` — автогенерация типов из `/openapi.json` FastAPI
+  вместо ручной синхронизации `api/types.ts` с Pydantic-схемами.
+  Применимо уже сейчас, даже до Nuxt (openapi-typescript).
+- Nitro-прокси `/api/**` — снимет CORS и спрячет Railway-URL, но требует
+  Node-сервер → только вместе с отложенной фазой SSR.
+- Cookie-based auth + refresh-токены — безопаснее localStorage (XSS),
+  но тоже требует серверную часть на фронте; отложено вместе с SSR.
+
+**Что перенимать не стоит:**
+
+- Vuetify — у проекта свой лёгкий UI-кит, тянуть Material-фреймворк незачем.
+- FingerprintJS — задача идентификации анонимов у нас решена проще:
+  гостевой прогресс живёт в localStorage и мержится при логине.
+- Email/password auth — осознанно выбран OAuth-only (без хранения паролей).
 
 ## Обзор
 
@@ -769,5 +811,5 @@ Browser
   │                              HTML с данными
   │                              (__NUXT_DATA__)
   │
-  └── Гидратация ──────────────────► Vue App (SPA mode)ез доп. запросов)
+  └── Гидратация ──────────────────► Vue App (SPA mode, без доп. запросов)
 ```
