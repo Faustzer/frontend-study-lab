@@ -1,11 +1,29 @@
 name: CI
 
-# temp: trigger a PR to verify required status checks (test/verify-required-checks)
 on:
   push:
     branches: [main]
+    paths:
+      - frontend/**
+      - nuxt.config.ts
+      - tsconfig.json
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - .github/workflows/ci.yml
   pull_request:
     branches: [main]
+    paths:
+      - frontend/**
+      - nuxt.config.ts
+      - tsconfig.json
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - .github/workflows/ci.yml
+
+permissions:
+  contents: read
 
 jobs:
   ci:
