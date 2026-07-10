@@ -234,23 +234,23 @@
 
 ### 4.1 Google OAuth2
 
-- [ ] Create project in Google Cloud Console
-- [ ] Enable Google+ API
-- [ ] Create OAuth2 credentials
-- [x] Set redirect URI: `https://study.faustze.tech/api/auth/google/callback`
-- [x] Store `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env`
+- [x] Create project in Google Cloud Console
+- [x] Create OAuth2 credentials
+- [x] Set redirect URI: `https://frontend-study-lab-production.up.railway.app/api/auth/google/callback`
+- [x] Store `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env` + Railway env
+- [x] Verified in prod: `GET /api/auth/google` → 302 to accounts.google.com
 
-### 4.2 Twitch OAuth2
+### 4.2 Twitch OAuth2 (not configured — endpoint returns 404 in prod)
 
 - [ ] Register application in Twitch Developer Console
-- [x] Set redirect URI: `https://study.faustze.tech/api/auth/twitch/callback`
-- [ ] Store `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET` in `.env`
+- [ ] Set redirect URI: `https://frontend-study-lab-production.up.railway.app/api/auth/twitch/callback`
+- [ ] Store `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET` in `.env` + Railway env
 
-### 4.3 Discord OAuth2
+### 4.3 Discord OAuth2 (not configured — endpoint returns 404 in prod)
 
 - [ ] Create application in Discord Developer Portal
-- [x] Add redirect URI: `https://study.faustze.tech/api/auth/discord/callback`
-- [ ] Store `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` in `.env`
+- [ ] Add redirect URI: `https://frontend-study-lab-production.up.railway.app/api/auth/discord/callback`
+- [ ] Store `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` in `.env` + Railway env
 
 ---
 
@@ -265,7 +265,7 @@
   - [x] Fixtures for test user
 - [x] Create `backend/tests/test_auth.py`:
   - [x] Test OAuth2 flow initiation (unknown/unconfigured provider cases)
-  - [ ] Test callback handling (needs mocked provider responses)
+  - [x] Test callback handling (`tests/test_oauth_callback.py`, mocked provider responses)
   - [x] Test JWT creation/verification
 - [x] Create `backend/tests/test_progress.py`:
   - [x] Test get progress
@@ -275,7 +275,7 @@
 
 ### 5.2 Integration Tests
 
-- [ ] Test full OAuth2 flow with mocked provider responses
+- [x] Test full OAuth2 flow with mocked provider responses (google/twitch/discord: success, error, malformed profile, upsert idempotency)
 - [x] Test database operations
 - [x] Test API endpoints with real database (manual smoke via docker-compose, 2026-07-08)
 
@@ -290,23 +290,23 @@
   - [x] Type checking (mypy)
   - [x] Run tests
   - [x] Build Docker image
-- [ ] Create `.github/workflows/deploy.yml`:
-  - [ ] Deploy backend to Railway/Render
-  - [ ] Deploy frontend to Vercel/Railway
-  - [ ] Run migrations on deploy
+- [x] Deploy pipeline (no separate backend deploy.yml needed):
+  - [x] Backend → Railway auto-deploys from GitHub on push to main
+  - [x] Frontend → GitHub Pages via `.github/workflows/deploy.yml` (after CI)
+  - [x] Migrations run on container start (`alembic upgrade head` in Dockerfile CMD, with retries)
 
 ### 6.2 Deploy Configuration
 
-- [ ] Create `railway.toml` or `render.yaml`:
-  - [ ] Backend service (FastAPI)
-  - [ ] PostgreSQL database
-  - [ ] Environment variables
-- [ ] Set up production secrets:
-  - [ ] `SECRET_KEY`
-  - [ ] `DATABASE_URL`
-  - [ ] OAuth2 credentials
-- [ ] Test production deployment
-- [ ] Verify Swagger docs at production URL
+- [x] Create `backend/railway.toml`:
+  - [x] Backend service (FastAPI, Dockerfile build, /health healthcheck)
+  - [x] PostgreSQL database (Railway addon)
+  - [x] Environment variables
+- [x] Set up production secrets (Railway env):
+  - [x] `JWT_SECRET`
+  - [x] `DATABASE_URL`
+  - [x] OAuth2 credentials (Google; Twitch/Discord pending — see Phase 4)
+- [x] Test production deployment (`/health` → 200)
+- [x] Verify Swagger docs at production URL (`/docs` → 200)
 
 ---
 
