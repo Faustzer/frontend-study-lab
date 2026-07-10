@@ -56,10 +56,10 @@ outdated). Modules: `@pinia/nuxt`, `@nuxtjs/i18n` v10+, `@nuxt/test-utils`.
 
 ## Phase 0: Preparation (~1 day)
 
-- [ ] All checks green: `pnpm run lint && pnpm run typecheck && pnpm run test:run && pnpm run build`
-- [ ] Run e2e: `pnpm run test:e2e` — this is the migration's regression net
-- [ ] Snapshot the state: `git tag v1.0.0-spa`
-- [ ] Do the migration in a long-lived `feat/nuxt-migration` branch; merge to
+- [x] All checks green: `pnpm run lint && pnpm run typecheck && pnpm run test:run && pnpm run build`
+- [x] Run e2e: `pnpm run test:e2e` — this is the migration's regression net
+- [x] Snapshot the state: `git tag v1.0.0-vite` (pushed 2026-07-10)
+- [x] Do the migration in a long-lived `feat/nuxt-migration` branch; merge to
       main only when e2e passes against the Nuxt build
 
 ## Phase 1: Nuxt skeleton in SPA mode (~2-4 days)
