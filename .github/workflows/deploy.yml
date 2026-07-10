@@ -36,20 +36,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # nuxt generate emits the static site into .output/public, including
+      # a 404.html SPA fallback so deep links like /auth/callback work on Pages
       - name: Build
-        run: pnpm run build
+        run: pnpm run generate
         env:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
-
-      # SPA fallback: GitHub Pages serves 404.html for unknown paths,
-      # so deep links like /auth/callback reach the Vue router
-      - name: Add SPA fallback
-        run: cp frontend/dist/index.html frontend/dist/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/dist
+          path: .output/public
 
   deploy:
     needs: build
