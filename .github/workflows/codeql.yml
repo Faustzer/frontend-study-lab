@@ -1,12 +1,14 @@
 name: CodeQL
 
 # Replaces both dynamic workflows from repo settings (CodeQL default setup +
-# Code Quality beta): one run per event does security and quality analysis.
+# Code Quality beta): one run per event covers security and quality queries.
 # Requires default setup to be disabled in Settings -> Advanced Security,
 # otherwise SARIF uploads from this workflow are rejected.
 #
-# Note: analysis-kinds is marked [Internal] in codeql-action until Code
-# Quality reaches GA (announced for 2026-07-20); revisit if it breaks.
+# The code-quality analysis kind is GitHub-internal and not supported in
+# custom workflows; per the codeql-action deprecation notice, quality
+# queries run here via `queries: security-and-quality` instead, and their
+# findings land in the code scanning alerts list.
 
 on:
   push:
@@ -33,24 +35,24 @@ jobs:
       matrix:
         include:
           - language: actions
-            # code-quality does not support workflow files
-            analysis-kinds: code-scanning
+            # quality queries only exist for the app languages
+            queries: security-extended
           - language: javascript-typescript
-            analysis-kinds: code-scanning,code-quality
+            queries: security-and-quality
           - language: python
-            analysis-kinds: code-scanning,code-quality
+            queries: security-and-quality
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: none
-          analysis-kinds: ${{ matrix.analysis-kinds }}
+          queries: ${{ matrix.queries }}
 
       - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: '/language:${{ matrix.language }}'
