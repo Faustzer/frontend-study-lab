@@ -107,7 +107,10 @@ expect(first.meta!.category).toBe('js-core')
 
 ```md
 frontend/mocks/
-  topics.ts       — mockTopicItems, mockTopicCategories
+  topics.ts       — mockTopicItems, mockTopicCategories (данные для unit-тестов)
+  handlers.ts     — MSW-обработчики API (auth, progress)
+  browser.ts      — MSW worker для dev-режима
+  server.ts       — MSW server для тестов
 ```
 
 ### Принципы
@@ -135,7 +138,7 @@ frontend/mocks/
 
 ### Чек-лист
 
-- [ ] **Тесты запускаются?** — всегда запускай `npm run test` перед коммитом
+- [ ] **Тесты запускаются?** — всегда запускай `pnpm run test:run` перед коммитом
 - [ ] **Проверяют поведение, а не реализацию?** — не тестируй внутренние вызовы
 - [ ] **Есть edge cases?** — пустые данные, undefined, граничные значения
 - [ ] **Утверждения осмысленные?** — не `expect(x).toBeDefined()`, а конкретные значения
@@ -156,12 +159,31 @@ frontend/mocks/
 ## 9. Запуск тестов
 
 ```bash
-# Все тесты
-npm run test
+# Watch-режим
+pnpm run test
+
+# Однократный прогон (как в CI)
+pnpm run test:run
 
 # Конкретный файл
-npx vitest run frontend/tests/useTopics.test.ts
+pnpm vitest run --config frontend/vitest.config.ts frontend/tests/useTopics.test.ts
 
-# С покрытием
-npx vitest run --coverage
+# E2E (Playwright; порт 5173 бывает занят — см. playwright.config.ts)
+pnpm run test:e2e
 ```
+
+---
+
+## 10. Текущая карта тестов
+
+| Где | Что покрыто |
+|---|---|
+| `frontend/tests/` | Логика каталога топиков (`useTopics`), тосты (`useToast`) |
+| `frontend/api/__tests__/api.test.ts` | API-клиент через MSW (progress, auth, ошибки) |
+| `frontend/stores/__tests__/` | Pinia stores: progress (XP, уровни, персистентность) + progress-sync (очередь, MSW) |
+| `frontend/components/ui/__tests__/` | UI-кит (UiButton, UiProgressBar, UiSkeleton) |
+| `frontend/e2e/` | Playwright: home, topic, progress, i18n, auth (частично skip до полного OAuth) |
+| `backend/tests/` | pytest: JWT, auth-эндпоинты, OAuth-колбэки (мокированные провайдеры), прогресс |
+
+Бэкенд-тесты запускаются из `backend/`: `.venv/bin/python -m pytest tests/ -q`
+(SQLite in-memory, реальные провайдеры не вызываются).

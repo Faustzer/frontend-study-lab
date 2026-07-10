@@ -1,7 +1,10 @@
-# Authentication System
+# Система авторизации
 
 > Полное описание системы авторизации frontend-study-lab.
-> Этот документ — спецификация для реализации бэкенд-эндпоинтов.
+> Изначально документ был спецификацией для бэкенда; сейчас бэкенд реализован
+> (`backend/app/routes/auth.py`), и документ описывает работающую систему.
+> В проде настроен Google OAuth; Twitch/Discord заработают после регистрации
+> приложений в консолях провайдеров (см. `plan-backend.md`, Phase 4).
 
 ---
 
@@ -65,8 +68,9 @@ AuthButton.vue  →  auth.login('google')
 
 ### 2. Авторизация на стороне провайдера
 
-Бэкенд получает запрос на `/auth/{provider}?state={state}`:
-1. Сохраняет `state` в сессию/cookie
+Бэкенд получает запрос на `/api/auth/{provider}?state={state}`:
+1. authlib сохраняет свой внутренний state в session-cookie (SessionMiddleware, max_age=600),
+   а `state` фронтенда прокидывается сквозь провайдера (round-trip)
 2. Редиректит пользователя на OAuth-страницу провайдера (Google/Twitch/Discord)
 3. Пользователь авторизуется на стороне провайдера
 4. Провайдер редиректит обратно на бэкенд с authorization code
@@ -74,11 +78,14 @@ AuthButton.vue  →  auth.login('google')
 ### 3. Callback от провайдера → бэкенд
 
 Бэкенд получает callback от провайдера:
-1. Обменивает authorization code на access token провайдера
-2. Получает профиль пользователя от провайдера
-3. Создаёт/обновляет пользователя в БД
+1. Обменивает authorization code на access token провайдера (authlib проверяет свой state)
+2. Получает и нормализует профиль пользователя (`_fetch_profile`: единая форма для всех провайдеров)
+3. Создаёт/обновляет пользователя в БД (`upsert_oauth_user`, уникальность по `provider + provider_id`)
 4. Генерирует JWT-токен для frontend
-5. Редиректит на frontend: `/auth/callback?token={jwt}&user={encoded_json}&state={state}`
+5. Редиректит на frontend: `{FRONTEND_URL}/auth/callback?token={jwt}&user={encoded_json}&state={state}`
+
+При любой ошибке OAuth (отказ пользователя, кривой профиль) — редирект на
+`/auth/callback?error=oauth_failed` вместо падения.
 
 ### 4. Обработка callback на frontend
 
@@ -277,9 +284,11 @@ if (!auth.isAuthenticated && ui.shouldShowAuthModal()) {
 
 ---
 
-## Dev-режим: тестирование без бэкенда
+## Dev-режим: тестирование без OAuth
 
-В `AuthModal.vue` при `import.meta.env.DEV === true` отображается кнопка:
+Два механизма:
+
+**1. Фронтенд-мок.** В `AuthModal.vue` при `import.meta.env.DEV === true` отображается кнопка:
 
 ```
 🛠 Dev Login (mock)
@@ -305,11 +314,18 @@ auth.setSession('dev-mock-token', mockUser)
 
 На проде кнопка не отображается.
 
+**2. Бэкенд-эндпоинт `POST /api/auth/dev-login`.** Создаёт реального пользователя
+в БД и возвращает валидный JWT — для локальной разработки с настоящим бэкендом
+и для тестов. Включается только при `DEV_LOGIN_ENABLED=true`, иначе 404.
+На проде выключен.
+
 ---
 
 ## MSW Mock Handlers
 
-В dev-режиме MSW перехватывает API-запросы:
+В dev-режиме MSW стартует с `onUnhandledRequest: 'bypass'`: перехватываются
+только запросы, совпавшие с handlers, остальное уходит в реальный бэкенд
+(скрипт `pnpm run dev-wait` ждёт локальные Postgres + API и запускает dev-сервер):
 
 | Endpoint | Method | MSW Response |
 |---|---|---|
@@ -353,7 +369,7 @@ auth.setSession('dev-mock-token', mockUser)
 
 ---
 
-## Бэкенд-эндпоинты (спецификация для реализации)
+## Бэкенд-эндпоинты (реализованы в `backend/app/routes/auth.py`)
 
 ### `GET /api/auth/{provider}?state={state}`
 
@@ -361,13 +377,15 @@ auth.setSession('dev-mock-token', mockUser)
 
 **Параметры:**
 - `provider`: `'google' | 'twitch' | 'discord'`
-- `state`: строка, которую бэкенд должен сохранить и вернуть в callback
+- `state`: строка от фронтенда, round-trip через провайдера обратно в callback
 
-**Действия бэкенда:**
-1. Валидировать `provider`
-2. Сохранить `state` в сессию/cookie/Redis
-3. Сформировать URL OAuth-авторизации провайдера с `redirect_uri` и `state`
-4. Редирект (302) на URL провайдера
+**Что делает бэкенд:**
+1. Валидирует `provider`: неизвестный или ненастроенный (нет client_id в env) → 404
+2. Формирует URL OAuth-авторизации провайдера с `redirect_uri` и `state` (authlib)
+3. Редирект (302) на URL провайдера
+
+Провайдеры регистрируются при старте только если заданы их креды —
+поэтому Twitch/Discord сейчас отвечают 404 на проде.
 
 ---
 
@@ -375,14 +393,13 @@ auth.setSession('dev-mock-token', mockUser)
 
 Callback от OAuth-провайдера.
 
-**Действия бэкенда:**
-1. Проверить `state` против сохранённого (CSRF)
-2. Обменять `code` на access token провайдера
-3. Получить профиль пользователя от провайдера (email, name, avatar)
-4. Найти или создать пользователя в БД (`users` table)
-5. Сгенерировать JWT-токен
-6. Закодировать пользователя как URL-safe JSON
-7. Редирект (302) на frontend:
+**Что делает бэкенд:**
+1. Обменивает `code` на access token провайдера (authlib проверяет свой state из session-cookie)
+2. Получает профиль пользователя от провайдера (email, name, avatar) и нормализует его
+3. Находит или создаёт пользователя в БД (`users`, upsert по `provider + provider_id`)
+4. Генерирует JWT-токен
+5. Кодирует пользователя как URL-safe JSON
+6. Редирект (302) на frontend (при ошибке — `?error=oauth_failed`):
 
 ```
 {FRONTEND_URL}/auth/callback?token={jwt}&user={encoded_user_json}&state={state}
@@ -437,14 +454,8 @@ Authorization: Bearer {jwt}
 
 ### `POST /api/auth/logout`
 
-Инвалидирует JWT-сессию.
-
-**Headers:**
-```
-Authorization: Bearer {jwt}
-```
-
-**Request Body:** `{}`
+JWT stateless — сервер ничего не инвалидирует, клиент просто удаляет токен.
+Эндпоинт сохранён ради контракта с фронтендом (и будущей ревокации, если понадобится).
 
 **Response 200:**
 ```json
@@ -461,13 +472,16 @@ Authorization: Bearer {jwt}
 |---|---|---|
 | `GOOGLE_CLIENT_ID` | Google OAuth Client ID | `xxx.apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | `GOCSPX-xxx` |
-| `TWITCH_CLIENT_ID` | Twitch Client ID | `xxx` |
-| `TWITCH_CLIENT_SECRET` | Twitch Client Secret | `xxx` |
-| `DISCORD_CLIENT_ID` | Discord Client ID | `xxx` |
-| `DISCORD_CLIENT_SECRET` | Discord Client Secret | `xxx` |
-| `JWT_SECRET` | Секрет для подписи JWT | `random-32-bytes` |
-| `JWT_EXPIRES_IN` | Время жизни JWT | `7d` |
-| `FRONTEND_URL` | URL frontend для callback-редиректа | `https://study-lab.dev` |
+| `TWITCH_CLIENT_ID` | Twitch Client ID (пока не настроен) | `xxx` |
+| `TWITCH_CLIENT_SECRET` | Twitch Client Secret (пока не настроен) | `xxx` |
+| `DISCORD_CLIENT_ID` | Discord Client ID (пока не настроен) | `xxx` |
+| `DISCORD_CLIENT_SECRET` | Discord Client Secret (пока не настроен) | `xxx` |
+| `JWT_SECRET` | Секрет для подписи JWT (HS256) | `random-32-bytes` |
+| `JWT_EXPIRES_DAYS` | Время жизни JWT в днях | `7` |
+| `FRONTEND_URL` | URL frontend для callback-редиректа | `https://study.faustze.tech` |
+| `DEV_LOGIN_ENABLED` | Включить `/api/auth/dev-login` (только dev!) | `false` |
+
+Полный список — в `backend/app/config.py` и `backend/.env.example`.
 
 ---
 
@@ -479,7 +493,7 @@ Authorization: Bearer {jwt}
 | `email` | VARCHAR(255) | Email от провайдера |
 | `display_name` | VARCHAR(100) | Имя пользователя |
 | `avatar_url` | TEXT | URL аватара |
-| `provider` | ENUM('google','twitch','discord') | OAuth-провайдер |
+| `provider` | VARCHAR(50) | OAuth-провайдер ('google'/'twitch'/'discord') |
 | `provider_id` | VARCHAR(255) | ID пользователя у провайдера |
 | `created_at` | TIMESTAMP | Дата регистрации |
 | `updated_at` | TIMESTAMP | Дата обновления |
@@ -488,10 +502,17 @@ Authorization: Bearer {jwt}
 
 ---
 
-## Что ещё не реализовано (Phase 3.3)
+## Синхронизация с бэкендом (Phase 3.3 — реализовано)
 
-- [ ] Backend sync: при логине — fetch прогресса с бэкенда → merge с localStorage
-- [ ] Backend sync: при completeModule — POST на бэкенд → обновить локально при успехе
-- [ ] Offline queue: если нет сети — складывать изменения в очередь → синхронизировать при появлении сети
-- [ ] 401 interceptor: если бэкенд вернул 401 → `clearSession()` + редирект на логин
-- [ ] Token refresh: если JWT истёк — обновить через refresh token (если бэкенд поддерживает)
+- [x] Backend sync: при логине `progress.syncWithBackend()` — flush локальной очереди → fetch прогресса → merge
+- [x] При completeModule — запись в персистентную очередь (`frontend-study-lab-progress-queue`) → POST на бэкенд
+- [x] Offline queue: неотправленные завершения остаются в очереди, флашатся по событию `online`
+  или при следующем `syncWithBackend()`; параллельные вызовы делят один in-flight flush
+- [x] 401 interceptor: `api.setOnUnauthorized()` (регистрируется в App.vue) → `auth.clearSession()` + открытие AuthModal
+  (модалка, не редирект — гость может продолжать работать локально)
+
+## Что не реализовано (осознанно)
+
+- **Token refresh** — JWT живёт 7 дней, refresh-токенов нет. Истёк → 401 → модалка входа.
+  Для учебного проекта с необязательной авторизацией этого достаточно.
+- **Ревокация JWT** — logout чисто клиентский (см. `/api/auth/logout` выше).
