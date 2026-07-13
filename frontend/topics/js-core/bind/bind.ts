@@ -1,4 +1,3 @@
-// eslint-disable-next-line unused-imports/no-unused-vars -- type-level params are declarative
 type AnyFunction = (this: any, ...args: any[]) => any
 
 export function myBind<F extends AnyFunction>(

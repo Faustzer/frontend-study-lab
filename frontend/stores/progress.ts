@@ -1,6 +1,7 @@
 import type { UserProgress as RemoteProgress } from '@/api/types'
-import type { UserProgress } from '@/types/progress'
+import type { CompletionResult, UserProgress } from '@/types/progress'
 import { progressApi } from '@/api/progress'
+import { features } from '@/config/features'
 import { useAuthStore } from '@/stores/auth'
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
@@ -17,13 +18,32 @@ type PendingCompletion
   = | { type: 'module', moduleSlug: string, xpReward: number }
     | { type: 'challenge', moduleSlug: string, challengeId: string, xpReward: number }
 
+/** Локальная дата вида YYYY-MM-DD — стрик и квест сравнивают дни, не таймстемпы */
+export function localDateKey(date: Date = new Date()): string {
+  const p = (v: number) => String(v).padStart(2, '0')
+  return `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())}`
+}
+
 function loadProgress(): UserProgress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw)
-      return JSON.parse(raw)
+      return migrateProgress(JSON.parse(raw))
   } catch { /* ignore */ }
   return defaultProgress()
+}
+
+/** Дополняет прогресс, сохранённый до геймифицированного редизайна */
+function migrateProgress(stored: Partial<UserProgress>): UserProgress {
+  const base = { ...defaultProgress(), ...stored }
+  if (stored.totalEarned === undefined) {
+    // Лучшая оценка: XP, потраченный на прошлые уровни, + текущий XP
+    let spent = 0
+    for (let lvl = 1; lvl < base.level; lvl++)
+      spent += xpForLevel(lvl)
+    base.totalEarned = spent + base.xp
+  }
+  return base
 }
 
 function loadQueue(): PendingCompletion[] {
@@ -43,6 +63,12 @@ function defaultProgress(): UserProgress {
     completedModules: [],
     completedChallenges: {},
     lastActive: new Date().toISOString(),
+    totalEarned: 0,
+    streak: 0,
+    lastCompletedDate: null,
+    questSlug: null,
+    questAssignedDate: null,
+    questCompletedDate: null,
   }
 }
 
@@ -93,6 +119,12 @@ export const useProgressStore = defineStore('progress', () => {
   const completedModules = computed(() => progress.value.completedModules)
   const pendingSyncCount = computed(() => pendingQueue.value.length)
 
+  const totalEarned = computed(() => progress.value.totalEarned)
+  const streak = computed(() => progress.value.streak)
+  const completedToday = computed(() => progress.value.lastCompletedDate === localDateKey())
+  const questSlug = computed(() => features.dailyQuest ? progress.value.questSlug : null)
+  const questCompletedToday = computed(() => progress.value.questCompletedDate === localDateKey())
+
   function isModuleCompleted(slug: string): boolean {
     return progress.value.completedModules.includes(slug)
   }
@@ -101,13 +133,71 @@ export const useProgressStore = defineStore('progress', () => {
     return progress.value.completedChallenges[moduleSlug]?.includes(challengeId) ?? false
   }
 
-  function completeModule(slug: string, xpReward: number) {
+  /**
+   * Назначает «задание дня»: детерминированный выбор по дате из ещё
+   * не пройденных модулей (или из всех, если пройдено всё). Уже
+   * назначенный сегодня квест не переназначается.
+   */
+  function ensureDailyQuest(slugs: string[]) {
+    if (!features.dailyQuest || slugs.length === 0)
+      return
+    const today = localDateKey()
+    const p = progress.value
+    if (p.questAssignedDate === today && p.questSlug && slugs.includes(p.questSlug))
+      return
+    const candidates = slugs.filter(s => !p.completedModules.includes(s))
+    const pool = candidates.length > 0 ? candidates : slugs
+    const daysSinceEpoch = Math.floor(Date.now() / 86_400_000)
+    p.questSlug = pool[daysSinceEpoch % pool.length]
+    p.questAssignedDate = today
+  }
+
+  /** Активен ли квест ×2 для модуля прямо сейчас */
+  function isQuestActive(slug: string): boolean {
+    return features.dailyQuest
+      && progress.value.questSlug === slug
+      && progress.value.questAssignedDate === localDateKey()
+      && !questCompletedToday.value
+      && !progress.value.completedModules.includes(slug)
+  }
+
+  /** Награда за модуль с учётом ×2 задания дня */
+  function rewardFor(slug: string, baseXp: number): number {
+    return isQuestActive(slug) ? baseXp * 2 : baseXp
+  }
+
+  /** Стрик: +1 при первом завершении за день (сравнение дат, не флаг) */
+  function bumpStreak() {
+    const today = localDateKey()
+    const p = progress.value
+    if (p.lastCompletedDate === today)
+      return
+    const yesterday = localDateKey(new Date(Date.now() - 86_400_000))
+    p.streak = p.lastCompletedDate === yesterday ? p.streak + 1 : 1
+    p.lastCompletedDate = today
+  }
+
+  function completeModule(slug: string, xpReward: number): CompletionResult | undefined {
     if (progress.value.completedModules.includes(slug))
       return
+    const wasQuest = isQuestActive(slug)
+    const reward = rewardFor(slug, xpReward)
+    const levelBefore = progress.value.level
+
     progress.value.completedModules.push(slug)
-    addXp(xpReward)
-    pendingQueue.value.push({ type: 'module', moduleSlug: slug, xpReward })
+    if (wasQuest)
+      progress.value.questCompletedDate = localDateKey()
+    bumpStreak()
+    addXp(reward)
+    pendingQueue.value.push({ type: 'module', moduleSlug: slug, xpReward: reward })
     void flushQueue()
+
+    return {
+      reward,
+      leveledUp: progress.value.level > levelBefore,
+      level: progress.value.level,
+      wasQuest,
+    }
   }
 
   function completeChallenge(moduleSlug: string, challengeId: string, xpReward: number) {
@@ -124,6 +214,7 @@ export const useProgressStore = defineStore('progress', () => {
 
   function addXp(amount: number) {
     progress.value.xp += amount
+    progress.value.totalEarned += amount
 
     // Check for level-up
     while (progress.value.xp >= progress.value.xpToNextLevel) {
@@ -246,10 +337,18 @@ export const useProgressStore = defineStore('progress', () => {
     xpPercent,
     completedCount,
     completedModules,
+    totalEarned,
+    streak,
+    completedToday,
+    questSlug,
+    questCompletedToday,
     isOnline,
     pendingSyncCount,
     isModuleCompleted,
     isChallengeCompleted,
+    ensureDailyQuest,
+    isQuestActive,
+    rewardFor,
     completeModule,
     completeChallenge,
     addXp,

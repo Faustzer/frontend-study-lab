@@ -15,9 +15,9 @@ export default defineNuxtConfig({
 
   css: ['@/assets/scss/index.scss'],
 
-  app: {
-    pageTransition: { name: 'page', mode: 'out-in' },
-  },
+  // Появление экрана делает CSS-анимация fadeUp на .home/.topic;
+  // pageTransition поверх Suspense ронял DOM при быстрой навигации
+  // (insertBefore NotFoundError), поэтому роутерных transition нет.
 
   devtools: { enabled: true },
 

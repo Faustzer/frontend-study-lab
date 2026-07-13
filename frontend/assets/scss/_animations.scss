@@ -1,0 +1,98 @@
+// Shared keyframes for the gamified redesign.
+// Принцип: никаких бесконечных пульсаций/миганий — только медленное
+// «парение» декора, плавные заполнения и одноразовые появления.
+
+// Фоновые кода-фигурки в hero (индивидуальный наклон через --tilt)
+@keyframes floaty {
+  0% {
+    transform: translateY(0) rotate(var(--tilt, -6deg));
+  }
+  100% {
+    transform: translateY(-14px) rotate(var(--tilt, -6deg));
+  }
+}
+
+// Появление экрана
+@keyframes fadeUp {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Одноразовое появление бейджей/точек
+@keyframes popIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Окно debounce
+@keyframes timerFill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+// «+N XP» всплывает и гаснет
+@keyframes riseFade {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+}
+
+// Разлёт частиц конфетти (траектория через --dx/--dy/--up/--rot)
+@keyframes confettiFly {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(calc(var(--dx) * 0.55), var(--up)) rotate(calc(var(--rot) * 0.5));
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+// Кольцо в Level-Up модалке
+@keyframes ringPop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

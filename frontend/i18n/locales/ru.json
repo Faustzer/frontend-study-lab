@@ -16,7 +16,60 @@
     "toggleTheme": "Переключить тему",
     "toggleMenu": "Открыть меню навигации",
     "skipToContent": "Перейти к содержимому",
-    "loading": "Загрузка"
+    "loading": "Загрузка",
+    "soon": "Скоро",
+    "resetProgress": "сбросить прогресс",
+    "resetConfirm": "точно сбросить? нажми ещё раз",
+    "continueWith": "Продолжить · {module}"
+  },
+  "player": {
+    "guest": "Гость",
+    "toNext": "до LV {level} · {left}"
+  },
+  "streak": {
+    "days": "стрик · {n} дн.",
+    "week": "Стрик недели",
+    "dayLabels": "пн,вт,ср,чт,пт,сб,вс"
+  },
+  "quest": {
+    "label": "Задание дня",
+    "title": "Пройди «{module}» — двойной XP",
+    "take": "Начать →",
+    "doneTitle": "Задание дня выполнено · +{xp} XP",
+    "doneHint": "Новое задание — завтра. Стрик продолжается 🔥",
+    "x2": "×2 сегодня"
+  },
+  "module": {
+    "completeHint": "XP зачислится сразу · стрик обновится 🔥",
+    "next": "Следующий: {module} →"
+  },
+  "levelUp": {
+    "title": "Level up",
+    "next": "Следующий уровень — через {xp} XP",
+    "continue": "Дальше 🚀"
+  },
+  "demo": {
+    "overline": "Интерактивное демо",
+    "silenceWindow": "окно тишины · 500 мс",
+    "eventStream": "поток событий",
+    "keyPress": "нажатие клавиши",
+    "fnCall": "вызов функции",
+    "status": {
+      "waiting": "ждём паузу…",
+      "called": "вызов выполнен ✓",
+      "idle": "начни печатать"
+    }
+  },
+  "home": {
+    "ctaHint": "≈ 5 минут · +{xp} XP",
+    "review": "повторение",
+    "statXpTotal": "XP всего",
+    "statModules": "Модули",
+    "statStreak": "Дней подряд",
+    "categoriesHint": "{count} направлений · открывается по мере готовности",
+    "continueArrow": "Продолжить →",
+    "categoryMeta": "{done}/{total} модулей · +{xp} XP ждут",
+    "categoryPct": "{pct}% готово"
   },
   "difficulty": {
     "easy": "Лёгкий",
@@ -59,6 +112,7 @@
   },
   "auth": {
     "login": "Войти",
+    "loginSave": "Войти → сохранить прогресс",
     "logout": "Выйти",
     "profile": "Профиль",
     "loginWith": "Войти через {provider}",
@@ -108,15 +162,15 @@
     "debounce": {
       "title": "debounce",
       "description": "Функция откладывает выполнение до тех пор, пока поток вызовов не остановится на заданное время.",
-      "inputLabel": "Введите текст",
-      "inputPlaceholder": "Печатай быстро",
+      "inputLabel": "Введите текст — как в строке поиска",
+      "inputPlaceholder": "Печатай быстро…",
       "currentValue": "Текущее значение",
-      "debouncedValue": "Debounced value",
-      "callCount": "Сколько раз сработало",
+      "debouncedValue": "Debounced · после паузы",
+      "callCount": "Вызовов функции",
       "completeBtn": "Завершить модуль → +{xp} XP",
       "completedBtn": "✓ Завершено"
     },
-    "deepClone": {
+    "deepclone": {
       "title": "deepClone",
       "description": "Deep clone создаёт новый объект со своими вложенными объектами и массивами. Поэтому изменения в copy не протекают обратно в original.",
       "changeBtn": "Изменить только copy",

@@ -36,7 +36,7 @@ test.describe('Language switching', () => {
   })
 
   test('topic page also switches language', async ({ page }) => {
-    await page.getByText('bind').click()
+    await page.getByRole('complementary').getByRole('link', { name: /^bind/i }).click()
     await page.locator('.lang-switcher').click()
 
     await expect(page.locator('.lang-switcher')).toContainText('RU')

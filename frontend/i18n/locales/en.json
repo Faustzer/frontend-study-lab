@@ -16,7 +16,60 @@
     "toggleTheme": "Toggle theme",
     "toggleMenu": "Toggle navigation menu",
     "skipToContent": "Skip to content",
-    "loading": "Loading"
+    "loading": "Loading",
+    "soon": "Soon",
+    "resetProgress": "reset progress",
+    "resetConfirm": "sure? click again to reset",
+    "continueWith": "Continue · {module}"
+  },
+  "player": {
+    "guest": "Guest",
+    "toNext": "to LV {level} · {left}"
+  },
+  "streak": {
+    "days": "streak · {n} d.",
+    "week": "Week streak",
+    "dayLabels": "mo,tu,we,th,fr,sa,su"
+  },
+  "quest": {
+    "label": "Daily quest",
+    "title": "Complete “{module}” — double XP",
+    "take": "Start →",
+    "doneTitle": "Daily quest complete · +{xp} XP",
+    "doneHint": "New quest tomorrow. Streak continues 🔥",
+    "x2": "×2 today"
+  },
+  "module": {
+    "completeHint": "XP is credited instantly · streak updates 🔥",
+    "next": "Next: {module} →"
+  },
+  "levelUp": {
+    "title": "Level up",
+    "next": "Next level in {xp} XP",
+    "continue": "Continue 🚀"
+  },
+  "demo": {
+    "overline": "Interactive demo",
+    "silenceWindow": "silence window · 500 ms",
+    "eventStream": "event stream",
+    "keyPress": "keypress",
+    "fnCall": "function call",
+    "status": {
+      "waiting": "waiting for a pause…",
+      "called": "call executed ✓",
+      "idle": "start typing"
+    }
+  },
+  "home": {
+    "ctaHint": "≈ 5 minutes · +{xp} XP",
+    "review": "review",
+    "statXpTotal": "Total XP",
+    "statModules": "Modules",
+    "statStreak": "Day streak",
+    "categoriesHint": "{count} tracks · unlocked as they're ready",
+    "continueArrow": "Continue →",
+    "categoryMeta": "{done}/{total} modules · +{xp} XP waiting",
+    "categoryPct": "{pct}% done"
   },
   "difficulty": {
     "easy": "Easy",
@@ -59,6 +112,7 @@
   },
   "auth": {
     "login": "Log in",
+    "loginSave": "Log in → save progress",
     "logout": "Log out",
     "profile": "Profile",
     "loginWith": "Log in with {provider}",
@@ -108,11 +162,11 @@
     "debounce": {
       "title": "debounce",
       "description": "The function delays execution until the stream of calls stops for a specified time.",
-      "inputLabel": "Enter text",
-      "inputPlaceholder": "Type quickly",
+      "inputLabel": "Type text — like in a search box",
+      "inputPlaceholder": "Type quickly…",
       "currentValue": "Current value",
-      "debouncedValue": "Debounced value",
-      "callCount": "Times triggered",
+      "debouncedValue": "Debounced · after pause",
+      "callCount": "Function calls",
       "completeBtn": "Complete module → +{xp} XP",
       "completedBtn": "✓ Completed"
     },

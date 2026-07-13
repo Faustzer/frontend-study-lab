@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 export interface UiButtonProps {
-  variant?: 'primary' | 'secondary' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'tactile' | 'tactile-secondary'
   size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   type?: 'button' | 'submit' | 'reset'
@@ -73,6 +73,51 @@ withDefaults(defineProps<UiButtonProps>(), {
     }
   }
 
+  // Тактильная (3D) кнопка — ключевой паттерн редизайна
+  &--tactile {
+    border-radius: 14px;
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 0 var(--accent-deep);
+    transition:
+      transform 0.12s,
+      box-shadow 0.12s,
+      filter 0.15s;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 0 var(--accent-deep);
+      filter: brightness(1.06);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--accent-deep);
+    }
+  }
+
+  // Вторичная тактильная — без 3D-грани
+  &--tactile-secondary {
+    border: 1px solid var(--accent-line);
+    border-radius: 14px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 700;
+    transition:
+      transform 0.12s,
+      background 0.15s;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+  }
+
   // Sizes
   &--sm {
     padding: $space-xs $space-md;
@@ -87,6 +132,25 @@ withDefaults(defineProps<UiButtonProps>(), {
   &--lg {
     padding: $space-md $space-xl;
     font-size: 16px;
+  }
+
+  // Точные размеры прототипа для тактильных кнопок
+  &--tactile,
+  &--tactile-secondary {
+    &.ui-btn--sm {
+      padding: 11px 18px;
+      font-size: 12.5px;
+    }
+
+    &.ui-btn--md {
+      padding: 13px 22px;
+      font-size: 13.5px;
+    }
+
+    &.ui-btn--lg {
+      padding: 14px 26px;
+      font-size: 14px;
+    }
   }
 }
 </style>

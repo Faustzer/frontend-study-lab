@@ -6,38 +6,72 @@
   line-height: 1.5;
   font-weight: 400;
 
-  // Light theme colors
+  // ===== Design tokens (gamified redesign) =====
+  --accent: #d96b2b;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --accent-line: color-mix(in srgb, var(--accent) 30%, transparent);
+  --accent-deep: color-mix(in srgb, var(--accent) 78%, #3a1a04);
+  --gold: #e0a318;
+  --green: #4a9d55;
+  --ink: #1c1f16;
+  --muted: rgba(28, 31, 22, 0.58);
+  --faint: rgba(28, 31, 22, 0.38);
+  --card: #fffdf6;
+  --line: #eadfc8;
+  --track: #ece3cc; // подложка баров/кольца
+  --row-hover: #f1ead9; // hover строк сайдбара
+  --input-border: #e2d8c2;
+  --input-bg: #fffef9;
+
+  // Legacy aliases (kept for existing components)
   --color-bg: #f7f2e8;
-  --color-bg-card: rgba(255, 255, 255, 0.7);
-  --color-text: #1c1f16;
-  --color-text-muted: rgba(28, 31, 22, 0.6);
-  --color-text-faint: rgba(28, 31, 22, 0.35);
-  --color-accent: #d96b2b;
-  --color-accent-light: rgba(217, 107, 43, 0.12);
-  --color-success: #4caf50;
-  --color-border: rgba(28, 31, 22, 0.08);
+  --color-bg-card: var(--card);
+  --color-text: var(--ink);
+  --color-text-muted: var(--muted);
+  --color-text-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-soft);
+  --color-success: var(--green);
+  --color-border: var(--line);
   --color-bg-code: #eae5d9;
 
   color: var(--color-text);
   background:
-    radial-gradient(circle at top left, rgba(255, 208, 122, 0.45), transparent 24%),
-    linear-gradient(135deg, #f7f2e8 0%, #f0ebe2 52%, #e6efe6 100%);
+    radial-gradient(circle at 8% -4%, rgba(255, 208, 122, 0.5), transparent 26%),
+    radial-gradient(circle at 100% 0%, rgba(126, 232, 162, 0.18), transparent 30%),
+    linear-gradient(135deg, #f7f2e8 0%, #f0ebe2 52%, #e9efe6 100%);
+  background-attachment: fixed;
 }
 
 // Dark mode overrides
 html.dark {
   color-scheme: dark;
 
-  // Dark theme colors
+  // Dark theme tokens — accent derivatives recompute via color-mix
+  --accent: #e8843d;
+  --accent-soft: color-mix(in srgb, var(--accent) 15%, transparent);
+  --accent-deep: color-mix(in srgb, var(--accent) 60%, #1a0c02);
+  --gold: #e8b23c;
+  --green: #66bb6a;
+  --ink: #e8e4d9;
+  --muted: rgba(232, 228, 217, 0.55);
+  --faint: rgba(232, 228, 217, 0.3);
+  --card: #22231c;
+  --line: #3a3b30;
+  --track: rgba(255, 255, 255, 0.1);
+  --row-hover: rgba(255, 255, 255, 0.06);
+  --input-border: #454637;
+  --input-bg: #1e1f18;
+
   --color-bg: #1a1b16;
-  --color-bg-card: rgba(255, 255, 255, 0.06);
-  --color-text: #e8e4d9;
-  --color-text-muted: rgba(232, 228, 217, 0.55);
-  --color-text-faint: rgba(232, 228, 217, 0.3);
-  --color-accent: #e8843d;
-  --color-accent-light: rgba(232, 132, 61, 0.15);
-  --color-success: #66bb6a;
-  --color-border: rgba(255, 255, 255, 0.08);
+  --color-bg-card: var(--card);
+  --color-text: var(--ink);
+  --color-text-muted: var(--muted);
+  --color-text-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-soft);
+  --color-success: var(--green);
+  --color-border: var(--line);
   --color-bg-code: #2a2b24;
 
   color: var(--color-text);
@@ -53,27 +87,6 @@ html.dark {
   .mobile-header {
     background: rgba(30, 31, 24, 0.9);
     border-bottom-color: var(--color-border);
-  }
-
-  .stat {
-    background: rgba(255, 255, 255, 0.04);
-  }
-
-  .category-card {
-    background: var(--color-bg-card);
-    border-color: var(--color-border);
-  }
-
-  .nav-link:hover {
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  .nav-link.active {
-    background: var(--color-accent-light);
-  }
-
-  .topic-li a:hover {
-    background: rgba(255, 255, 255, 0.04);
   }
 
   .ui-modal {
