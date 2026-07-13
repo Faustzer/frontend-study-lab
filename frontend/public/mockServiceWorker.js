@@ -21,6 +21,12 @@ addEventListener('activate', function (event) {
 })
 
 addEventListener('message', async function (event) {
+  // Service workers only ever control same-origin clients, but verify
+  // explicitly so the handler doesn't trust an unchecked message origin.
+  if (event.origin && event.origin !== self.location.origin) {
+    return
+  }
+
   const clientId = Reflect.get(event.source || {}, 'id')
 
   if (!clientId || !self.clients) {
