@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.config import get_settings
 from app.database import Base
-from app.models import User, UserProgress  # noqa: F401 — populate metadata
+from app.models import User, UserProgress
 
 config = context.config
 # Settings normalize postgres:// URLs (as handed out by Railway/Render)
@@ -14,6 +14,10 @@ config = context.config
 config.set_main_option("sqlalchemy.url", get_settings().database_url)
 
 target_metadata = Base.metadata
+# Import models above for their side effect of registering tables on
+# Base.metadata, which autogenerate needs — reference them so they aren't
+# flagged as unused imports.
+assert User and UserProgress
 
 
 def run_migrations_offline() -> None:
