@@ -38,7 +38,7 @@
     "@playwright/test": "^1.61.1",
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^26.1.1",
-    "@vitejs/plugin-vue": "^6.0.7",
+    "@vitejs/plugin-vue": "^6.0.8",
     "@vue/test-utils": "^2.4.11",
     "eslint": "^10.6.0",
     "husky": "^9.1.7",
