@@ -2,6 +2,10 @@
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
+> **⚠️ Status: Frozen (development on hold)**
+>
+> This project is temporarily not under active development. I'm not working on it at the moment, so expect no new features, fixes, or releases. It may still be useful for learning purposes. Issues and PRs may remain unanswered for now.
+
 A practice-first learning platform for frontend development. Learn JavaScript, TypeScript, CSS, Vue, and more through interactive examples and hands-on coding — not documentation.
 
 ![Readme banner](./readme-banner.svg)
