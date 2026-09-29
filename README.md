@@ -25,7 +25,7 @@ Most tutorials drown you in theory. This is different. Each topic gives you:
 | ------------ | --------------------------------------------------------- |
 | Frontend     | Vue 3 + TypeScript, Vite, Pinia (persisted state)          |
 | Backend      | FastAPI, SQLAlchemy (async) + asyncpg, Alembic migrations  |
-| Auth         | OAuth2 via Authlib (Google; Twitch/Discord in progress)    |
+| Auth         | OAuth2 via Authlib (Google; Twitch/Discord implemented, UI off until configured) |
 | i18n         | vue-i18n (EN / RU)                                         |
 | Styling      | SCSS (variables, mixins, modules)                          |
 | Testing      | Vitest + MSW (frontend unit), Playwright (e2e), Pytest (backend) |
@@ -246,7 +246,7 @@ pnpm run dev
 - [x] Topic components (CompleteButton)
 - [x] Code blocks with overflow handling
 - [x] Backend (FastAPI + PostgreSQL + Alembic)
-- [x] OAuth2 — Google (Twitch, Discord in progress)
+- [x] OAuth2 — Google (Twitch, Discord: backend done, login buttons hidden until credentials are configured)
 - [x] User profiles
 - [x] Progress sync (frontend ↔ backend)
 - [x] CI/CD (GitHub Actions: `CI`, `Backend CI`, deploy)

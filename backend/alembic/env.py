@@ -1,8 +1,8 @@
 import asyncio
 
-from alembic import context
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from alembic import context
 from app.config import get_settings
 from app.database import Base
 from app.models import User, UserProgress

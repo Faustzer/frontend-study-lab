@@ -5,9 +5,10 @@ Revises:
 Create Date: 2026-07-08 14:03:14.482224
 
 """
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 revision = 'aa6726c11f09'
 down_revision = None

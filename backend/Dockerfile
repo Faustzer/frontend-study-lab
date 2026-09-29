@@ -10,6 +10,10 @@ COPY alembic.ini .
 COPY alembic ./alembic
 COPY app ./app
 
+# Drop root: the app only needs to read its own code
+RUN useradd --system --no-create-home --uid 10001 app
+USER app
+
 EXPOSE 8000
 
 # Run migrations (with retries: the platform's private network / DB
