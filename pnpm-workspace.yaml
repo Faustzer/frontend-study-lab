@@ -2,11 +2,17 @@ allowBuilds:
   '@parcel/watcher': true
   esbuild: true
   msw: true
-minimumReleaseAgeExclude:
-  - brace-expansion@5.0.8
 onlyBuiltDependencies:
   - "@parcel/watcher"
   - esbuild
   - msw
+# Transitive security patches, each kept within its current major.
+# Drop an entry once the parent package ships the fixed version.
 overrides:
-  "brace-expansion@5": "^5.0.8"
+  "brace-expansion@2": "^2.1.4"
+  "brace-expansion@5": "^5.0.9"
+  "joi@18": "^18.2.5"
+  "nanoid@3": "^3.3.18"
+  "postcss@8": "^8.5.23"
+  "svgo@4": "^4.1.0"
+  "tar@7": "^7.5.21"

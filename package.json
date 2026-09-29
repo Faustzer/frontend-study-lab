@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^1.0.1",
-    "nuxt": "^4.4.8",
+    "nuxt": "^4.5.1",
     "pinia": "^4.0.2",
     "pinia-plugin-persistedstate": "^4.7.1",
     "vue": "^3.5.40",
@@ -32,25 +32,25 @@
     "vue-router": "^5.2.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^9.1.0",
+    "@antfu/eslint-config": "^9.2.0",
     "@iconify/vue": "^5.0.1",
     "@nuxt/test-utils": "^4.0.3",
-    "@playwright/test": "^1.61.1",
+    "@playwright/test": "^1.62.0",
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^26.1.1",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/test-utils": "^2.4.11",
-    "eslint": "^10.7.0",
+    "eslint": "^10.8.0",
     "husky": "^9.1.7",
     "jsdom": "^26.0.0",
-    "lint-staged": "^17.0.8",
+    "lint-staged": "^17.2.0",
     "msw": "^2.15.0",
-    "sass": "^1.87.0",
+    "sass": "^1.102.0",
     "typescript": "^5.8.3",
     "vite": "^8.1.5",
-    "vitest": "^4.1.10",
-    "vue-tsc": "^3.3.7",
-    "wait-on": "^9.0.10"
+    "vitest": "^4.1.11",
+    "vue-tsc": "^3.3.8",
+    "wait-on": "^9.1.0"
   },
   "lint-staged": {
     "frontend/**/*.{ts,tsx,vue}": [
