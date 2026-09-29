@@ -56,7 +56,7 @@ jobs:
 
       - name: Lint (ruff)
         if: steps.changes.outputs.run == 'true'
-        run: ruff check app tests scripts
+        run: ruff check .
 
       - name: Type check (mypy)
         if: steps.changes.outputs.run == 'true'

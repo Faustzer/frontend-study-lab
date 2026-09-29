@@ -1,11 +1,22 @@
 version: 2
 updates:
+  # The project is frozen: batch routine updates into one PR a month.
+  # Majors still get their own PRs, and security updates are raised
+  # immediately regardless of this schedule.
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 10
+      interval: monthly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+    ignore:
+      # TypeScript 7 (native compiler) drops the JS API vue-tsc needs:
+      # `nuxt typecheck` fails with ERR_PACKAGE_PATH_NOT_EXPORTED
+      # ('./lib/tsc'). Revisit once vue-tsc supports TS 7.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
     labels:
       - dependencies
     commit-message:
@@ -15,11 +26,25 @@ updates:
   - package-ecosystem: pip
     directory: /backend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
     open-pull-requests-limit: 5
+    groups:
+      pip-minor-patch:
+        update-types: [minor, patch]
     labels:
       - dependencies
     commit-message:
       prefix: "deps"
       include: scope
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "ci"
