@@ -11,6 +11,12 @@ updates:
     groups:
       npm-minor-patch:
         update-types: [minor, patch]
+    ignore:
+      # TypeScript 7 (native compiler) drops the JS API vue-tsc needs:
+      # `nuxt typecheck` fails with ERR_PACKAGE_PATH_NOT_EXPORTED
+      # ('./lib/tsc'). Revisit once vue-tsc supports TS 7.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
     labels:
       - dependencies
     commit-message:
