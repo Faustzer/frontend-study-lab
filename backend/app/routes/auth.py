@@ -167,7 +167,7 @@ async def auth_callback(provider: str, request: Request, db: DbDep) -> RedirectR
         token = await client.authorize_access_token(request)
         profile = await _fetch_profile(provider, client, token)
     except (OAuthError, KeyError, IndexError):
-        return RedirectResponse(f"{frontend_callback}?{urlencode({'error': 'oauth_failed'})}")
+        return RedirectResponse(f"{frontend_callback}#{urlencode({'error': 'oauth_failed'})}")
 
     user = await upsert_oauth_user(db, provider=provider, **profile)
     params = urlencode({
@@ -175,4 +175,6 @@ async def auth_callback(provider: str, request: Request, db: DbDep) -> RedirectR
         "user": json.dumps(_user_payload(user)),
         "state": request.query_params.get("state", ""),
     })
-    return RedirectResponse(f"{frontend_callback}?{params}")
+    # The fragment is never sent to servers, so the token stays out of
+    # access logs and Referer headers (unlike a query string).
+    return RedirectResponse(f"{frontend_callback}#{params}")

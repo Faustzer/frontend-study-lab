@@ -42,12 +42,24 @@ type CallbackStatus = 'loading' | 'success' | 'error'
 
 const status = ref<CallbackStatus>('loading')
 
+/**
+ * The backend puts the callback data in the URL fragment so the token
+ * never reaches server logs or Referer headers. The query string is
+ * still read so a backend deployed before this change keeps working.
+ */
+function readCallbackParams(): URLSearchParams {
+  const hash = window.location.hash.slice(1)
+  return new URLSearchParams(hash || window.location.search)
+}
+
 function goHome() {
   router.push('/')
 }
 
 onMounted(() => {
-  const params = new URLSearchParams(window.location.search)
+  const params = readCallbackParams()
+  // Drop the token from the address bar and history entry right away
+  window.history.replaceState(window.history.state, '', window.location.pathname)
   const success = auth.handleCallback(params)
 
   if (success) {

@@ -68,7 +68,7 @@ def _redirect_params(resp):
     assert resp.status_code == 307
     location = resp.headers["location"]
     assert location.startswith(FRONTEND_CALLBACK)
-    return {k: v[0] for k, v in parse_qs(urlparse(location).query).items()}
+    return {k: v[0] for k, v in parse_qs(urlparse(location).fragment).items()}
 
 
 class TestGoogleCallback:
@@ -81,6 +81,8 @@ class TestGoogleCallback:
         assert params["state"] == "csrf-123"
         assert "alice@gmail.com" in params["user"]
         assert "error" not in params
+        # Token travels in the fragment, never in the query string
+        assert "token" not in urlparse(resp.headers["location"]).query
 
     async def test_created_user_is_usable_via_me(self, client, use_client):
         use_client(_stub_client(token={"userinfo": GOOGLE_USERINFO}))
