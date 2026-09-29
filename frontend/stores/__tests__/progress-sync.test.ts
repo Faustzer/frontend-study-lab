@@ -185,6 +185,47 @@ describe('progress store backend sync', () => {
     expect(localStorage.getItem(QUEUE_KEY)).toBe('[]')
   })
 
+  it('drops entries the backend rejects permanently and keeps flushing', async () => {
+    useOfflineBackend()
+    loginAs(testUser)
+    const store = useProgressStore()
+    store.completeModule('retired-module', 60)
+    store.completeModule('bind', 60)
+    await vi_waitForQueue(store, { expectDrained: false })
+
+    server.resetHandlers()
+    const { state, received } = useFakeBackend()
+    server.use(
+      http.post('/api/progress/complete', async ({ request }) => {
+        const body = await request.json() as { moduleSlug: string }
+        if (body.moduleSlug === 'retired-module')
+          return HttpResponse.json({ detail: 'Unknown module' }, { status: 404 })
+        received.push(body.moduleSlug)
+        state.completedModules.push(body.moduleSlug)
+        return HttpResponse.json({ data: state })
+      }),
+    )
+
+    const ok = await store.syncWithBackend()
+
+    expect(ok).toBe(true)
+    expect(store.pendingSyncCount).toBe(0)
+    expect(received).toEqual(['bind'])
+  })
+
+  it('keeps entries queued on a server error', async () => {
+    loginAs(testUser)
+    server.use(
+      http.post('/api/progress/complete', () => new HttpResponse(null, { status: 500 })),
+    )
+    const store = useProgressStore()
+    store.completeModule('bind', 60)
+    await vi_waitForQueue(store, { expectDrained: false })
+
+    expect(store.isOnline).toBe(false)
+    expect(store.pendingSyncCount).toBe(1)
+  })
+
   it('flushes guest completions after login', async () => {
     const { state } = useFakeBackend()
     const store = useProgressStore()

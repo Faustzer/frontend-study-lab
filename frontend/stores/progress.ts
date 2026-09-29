@@ -18,6 +18,15 @@ type PendingCompletion
   = | { type: 'module', moduleSlug: string, xpReward: number }
     | { type: 'challenge', moduleSlug: string, challengeId: string, xpReward: number }
 
+/**
+ * 404/409/422 mean the backend will never accept the entry; 401 (session
+ * expired), 408 and 429 are worth retrying later.
+ */
+function isPermanentRejection(error: unknown): boolean {
+  const status = (error as { status?: unknown } | null)?.status
+  return typeof status === 'number' && [404, 409, 422].includes(status)
+}
+
 /** Локальная дата вида YYYY-MM-DD — стрик и квест сравнивают дни, не таймстемпы */
 export function localDateKey(date: Date = new Date()): string {
   const p = (v: number) => String(v).padStart(2, '0')
@@ -261,7 +270,13 @@ export const useProgressStore = defineStore('progress', () => {
           })
         }
         pendingQueue.value.shift()
-      } catch {
+      } catch (error) {
+        // The server rejected this entry for good (unknown module,
+        // challenge limit): drop it so it can't block the rest forever
+        if (isPermanentRejection(error)) {
+          pendingQueue.value.shift()
+          continue
+        }
         isOnline.value = false
         return false
       }

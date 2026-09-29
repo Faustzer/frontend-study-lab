@@ -1,6 +1,6 @@
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -30,7 +30,10 @@ async def get_progress(user: UserDep, db: DbDep) -> dict[str, Any]:
 async def complete_module(
     body: CompleteModuleRequest, user: UserDep, db: DbDep
 ) -> dict[str, Any]:
-    row = await progress_service.complete_module(db, user.id, body.module_slug)
+    try:
+        row = await progress_service.complete_module(db, user.id, body.module_slug)
+    except progress_service.UnknownModuleError:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Unknown module") from None
     return _wrap(row)
 
 
@@ -38,7 +41,14 @@ async def complete_module(
 async def complete_challenge(
     body: CompleteChallengeRequest, user: UserDep, db: DbDep
 ) -> dict[str, Any]:
-    row = await progress_service.complete_challenge(
-        db, user.id, body.module_slug, body.challenge_id, body.xp_reward
-    )
+    try:
+        row = await progress_service.complete_challenge(
+            db, user.id, body.module_slug, body.challenge_id, body.xp_reward
+        )
+    except progress_service.UnknownModuleError:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Unknown module") from None
+    except progress_service.ChallengeLimitError:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, detail="Challenge limit reached for this module"
+        ) from None
     return _wrap(row)

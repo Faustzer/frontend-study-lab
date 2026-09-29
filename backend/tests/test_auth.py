@@ -15,7 +15,8 @@ class TestJwt:
     def test_rejects_wrong_signature(self):
         import jwt as pyjwt
 
-        forged = pyjwt.encode({"sub": str(uuid.uuid4())}, "other-secret", algorithm="HS256")
+        other_key = "other-secret-0123456789abcdef0123456789"
+        forged = pyjwt.encode({"sub": str(uuid.uuid4())}, other_key, algorithm="HS256")
         assert verify_access_token(forged) is None
 
 
@@ -67,3 +68,23 @@ class TestAuthEndpoints:
         # No OAuth credentials in the test environment
         resp = await client.get("/api/auth/google")
         assert resp.status_code == 404
+
+
+class TestUpsertOauthUser:
+    async def test_same_email_across_providers_creates_separate_users(self, db_session):
+        from app.services.auth import upsert_oauth_user
+
+        common = {"email": "same@test.com", "display_name": "X", "avatar_url": ""}
+        google = await upsert_oauth_user(db_session, provider="google", provider_id="g1", **common)
+        discord = await upsert_oauth_user(
+            db_session, provider="discord", provider_id="d1", **common
+        )
+        assert google.id != discord.id
+
+    async def test_users_without_email_do_not_collide(self, db_session):
+        from app.services.auth import upsert_oauth_user
+
+        common = {"email": "", "display_name": "", "avatar_url": ""}
+        a = await upsert_oauth_user(db_session, provider="twitch", provider_id="t1", **common)
+        b = await upsert_oauth_user(db_session, provider="twitch", provider_id="t2", **common)
+        assert a.id != b.id
