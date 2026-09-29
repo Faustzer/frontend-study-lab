@@ -63,10 +63,9 @@ class Settings(BaseSettings):
         if self.jwt_secret == DEFAULT_JWT_SECRET:
             raise ValueError("JWT_SECRET must be set for a non-local deployment")
         if len(self.jwt_secret) < MIN_JWT_SECRET_LENGTH:
-            logger.warning(
-                "JWT_SECRET is shorter than %d characters; use a longer random value",
-                MIN_JWT_SECRET_LENGTH,
-            )
+            # Constant message: passing anything secret-derived to the
+            # logger is flagged by CodeQL (py/clear-text-logging)
+            logger.warning("JWT_SECRET is shorter than 32 characters; use a longer random value")
         if self.dev_login_enabled:
             logger.warning("DEV_LOGIN_ENABLED is on for a non-local deployment")
         return self
