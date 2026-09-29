@@ -57,6 +57,11 @@ jobs:
         if: steps.changes.outputs.run == 'true'
         run: pnpm install --frozen-lockfile
 
+      # Fail on known high/critical advisories in the dependency tree
+      - name: Audit dependencies
+        if: steps.changes.outputs.run == 'true'
+        run: pnpm audit --audit-level=high
+
       - name: Lint
         if: steps.changes.outputs.run == 'true'
         run: pnpm run lint
