@@ -13,6 +13,9 @@ _DATA_FILE = Path(__file__).parent / "data" / "modules.json"
 # Challenges have no catalog yet (frontend does not ship challenge
 # definitions); cap the client-sent reward instead.
 CHALLENGE_XP_CAP = 50
+# Bounds XP farming and JSON growth: challenge ids are client-chosen,
+# so without a limit every new id would award XP again.
+MAX_CHALLENGES_PER_MODULE = 10
 
 
 @lru_cache

@@ -12,7 +12,9 @@ class User(Base):
     __table_args__ = (UniqueConstraint("provider", "provider_id", name="uq_users_provider"),)
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    # Not unique: the same person may sign in through several providers,
+    # and Twitch/Discord can return no email at all.
+    email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     display_name: Mapped[str] = mapped_column(String(255), default="")
     avatar_url: Mapped[str] = mapped_column(String(1024), default="")
     provider: Mapped[str] = mapped_column(String(50), nullable=False)

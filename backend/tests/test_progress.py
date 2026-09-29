@@ -48,11 +48,11 @@ class TestProgressEndpoints:
         assert data["completedModules"] == ["bind"]
         assert data["xp"] == 60
 
-    async def test_unknown_module_recorded_without_xp(self, auth_client):
+    async def test_unknown_module_rejected(self, auth_client):
         resp = await auth_client.post("/api/progress/complete", json={"moduleSlug": "nope"})
-        data = resp.json()["data"]
-        assert data["completedModules"] == ["nope"]
-        assert data["xp"] == 0
+        assert resp.status_code == 404
+        data = (await auth_client.get("/api/progress")).json()["data"]
+        assert data["completedModules"] == []
 
     async def test_level_up(self, auth_client):
         # bind(60) + curry(60) = 120 total → level 2, 20 xp remaining
@@ -85,3 +85,34 @@ class TestProgressEndpoints:
         data = resp.json()["data"]
         assert data["completedModules"] == ["debounce"]
         assert data["xp"] == 30
+
+    async def test_challenge_for_unknown_module_rejected(self, auth_client):
+        resp = await auth_client.post(
+            "/api/progress/challenge/complete",
+            json={"moduleSlug": "nope", "challengeId": "c1", "xpReward": 50},
+        )
+        assert resp.status_code == 404
+
+    async def test_challenge_count_is_capped_per_module(self, auth_client):
+        from app.catalog import CHALLENGE_XP_CAP, MAX_CHALLENGES_PER_MODULE
+
+        for i in range(MAX_CHALLENGES_PER_MODULE):
+            resp = await auth_client.post(
+                "/api/progress/challenge/complete",
+                json={"moduleSlug": "bind", "challengeId": f"c{i}", "xpReward": 50},
+            )
+            assert resp.status_code == 200
+
+        resp = await auth_client.post(
+            "/api/progress/challenge/complete",
+            json={"moduleSlug": "bind", "challengeId": "one-too-many", "xpReward": 50},
+        )
+        assert resp.status_code == 409
+
+        data = (await auth_client.get("/api/progress")).json()["data"]
+        assert len(data["completedChallenges"]["bind"]) == MAX_CHALLENGES_PER_MODULE
+        from app.services.progress import split_total_xp
+
+        assert (data["level"], data["xp"]) == split_total_xp(
+            MAX_CHALLENGES_PER_MODULE * CHALLENGE_XP_CAP
+        )
