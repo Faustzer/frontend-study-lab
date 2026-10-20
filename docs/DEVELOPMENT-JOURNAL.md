@@ -11,14 +11,14 @@ documents it links to.
 
 ---
 
-## Status snapshot (updated 2026-10-20)
+## Status snapshot (updated 2026-10-21)
 
 **Project state: frozen.** Development is paused (see README banner).
 
 | Area | State |
 | --- | --- |
 | Frontend | Nuxt 4.6 SPA (`ssr: false`), deployed to GitHub Pages (study.faustze.tech) via `nuxt generate`. Works for guests with local progress only. vue-i18n 11, vitest 5, msw 3. |
-| Backend | FastAPI + async SQLAlchemy + Alembic. **Not hosted anywhere**: the Railway trial ended and the old URL answers "Application not found". |
+| Backend | FastAPI + async SQLAlchemy + Alembic. **Not hosted anywhere**: the Railway trial ended and the old URL answers "Application not found". The move to a VPS is planned in `docs/VPS-MIGRATION.md`. |
 | Auth | Google OAuth works in code; Twitch/Discord are implemented in the backend but their buttons are hidden in `AuthModal.vue`. |
 | CI | lint, `nuxt typecheck`, unit tests, build, `pnpm audit --audit-level=high`, backend ruff/mypy/pytest, Docker build, CodeQL. All green with #93. |
 | Dependencies | After #93: `pip-audit` is clean; `pnpm audit` shows 1 low plus 2 ignored highs with no patched release (see Known issues). Dependabot runs monthly with grouped minor/patch updates. |
@@ -51,21 +51,16 @@ docker compose up db   # local Postgres on :5433 for running the API
 
 Ordered by priority.
 
-1. **Re-host the backend as a self-run Docker service** (replacing Railway).
-   - `backend/Dockerfile` is ready: it runs `alembic upgrade head` with
-     retries, then uvicorn on `$PORT` (default 8000) as a non-root user.
-   - Required env: `DATABASE_URL` (a `postgres://` URL is normalized to
-     `+asyncpg`), `JWT_SECRET` (long and random; **a non-local deploy
-     refuses the default**), `FRONTEND_URL=https://study.faustze.tech`,
-     `ALLOWED_ORIGINS`, `GOOGLE_CLIENT_ID/SECRET`.
-   - Update the Google OAuth redirect URI to
-     `<new-host>/api/auth/google/callback`.
-   - Set the repo variable `VITE_API_URL` to `<new-host>/api`, then run
-     "Deploy to GitHub Pages" manually (`workflow_dispatch` works since #85).
-   - The uvicorn command uses `--forwarded-allow-ips='*'`. That is fine only
-     behind a trusted reverse proxy, so tighten it for the new setup.
-   - Constraint: everything must fit a ~1 GB free-tier-sized box. The pool
-     size is already small (3 + 2 overflow).
+1. **Move everything to one VPS with Docker Compose**: follow
+   **`docs/VPS-MIGRATION.md`**. It covers phases, the server setup,
+   rollback, and config drafts tested locally.
+   - Target: Caddy (TLS) → static web + FastAPI + Postgres on one origin
+     (`study.faustze.tech`, API under `/api`), so CORS and `VITE_API_URL`
+     go away.
+   - The images are built in Actions and pushed to GHCR. The VPS pulls them
+     and deploys over SSH with a forced-command key.
+   - Owner decisions still open: the VPS provider, and the offsite backup
+     target.
 2. **Nuxt migration Phase 2–4** (`docs/MIGRATION.md`): `@nuxtjs/i18n`,
    `runtimeConfig` instead of `VITE_API_URL`, `defineVitestConfig`, then SSG
    (Phase 4) for SEO on topic pages.
@@ -131,8 +126,6 @@ Ordered by priority.
   It is harmless because MSW only starts in dev (`plugins/msw.client.ts`),
   but it could be excluded from the build.
 - Some code comments are in Russian; the project rule is English only.
-- `docs/AGENTS.md` asks for `.env.example` files, but they are listed in
-  `.gitignore`. Decide which one is right.
 - `docs/MIGRATION.md` Phase 0–1 are done, but the checkboxes are only
   partially updated.
 
@@ -152,10 +145,30 @@ Ordered by priority.
 | 2026-09-29 | Railway dropped; the future backend is a self-run Docker service | The trial ended. |
 | 2026-10-20 | Unfixable build-time advisories are ignored by GHSA id, not by lowering `--audit-level` | New high/critical advisories still fail CI. |
 | 2026-10-20 | Transitive `overrides` removed | A fresh resolve already picks the fixed versions, so the overrides only added maintenance. |
+| 2026-10-21 | Plan: the whole product moves to one VPS (Docker Compose) on one origin; Pages becomes the rollback path | No CORS, one host for OAuth, the same images anywhere, and no platform trial to run out. See `docs/VPS-MIGRATION.md`. |
 
 ---
 
 ## Session log
+
+### 2026-10-21 — PR triage, VPS migration plan
+
+- Open PRs: #93 is mergeable (clean, all checks green). Every dependabot PR
+  (#69, #73, #75, #81, #87, #88, #89, #90, #92) is superseded by #93 at the
+  same or a newer version, and #81 is already in main. Merge only #93, then
+  close the rest.
+- Wrote `docs/VPS-MIGRATION.md` and ran its compose stack locally:
+  - SPA routes and `/api` work through Caddy;
+  - the OAuth `redirect_uri` comes out as https only when
+    `FORWARDED_ALLOW_IPS` covers the proxy;
+  - Postgres is isolated;
+  - `pg_dump` restores cleanly;
+  - idle memory is about 160 MiB in total.
+- Found a trap for the planned release workflow: CI change detection
+  silently skips all checks when `github.event.before` is empty
+  (`workflow_dispatch`). The fix is noted in the plan's Appendix I.
+- Removed the stale note that `.env.example` is git-ignored. Only `.env`
+  is ignored (checked with `git check-ignore`).
 
 ### 2026-10-20 — dependency refresh, broken bot and site
 
