@@ -11,20 +11,29 @@ documents it links to.
 
 ---
 
-## Status snapshot (updated 2026-09-29)
+## Status snapshot (updated 2026-10-20)
 
 **Project state: frozen.** Development is paused (see README banner).
 
 | Area | State |
 | --- | --- |
-| Frontend | Nuxt 4.5 SPA (`ssr: false`), deployed to GitHub Pages (study.faustze.tech) via `nuxt generate`. Works for guests with local progress only. |
+| Frontend | Nuxt 4.6 SPA (`ssr: false`), deployed to GitHub Pages (study.faustze.tech) via `nuxt generate`. Works for guests with local progress only. vue-i18n 11, vitest 5, msw 3. |
 | Backend | FastAPI + async SQLAlchemy + Alembic. **Not hosted anywhere**: the Railway trial ended and the old URL answers "Application not found". |
 | Auth | Google OAuth works in code; Twitch/Discord are implemented in the backend but their buttons are hidden in `AuthModal.vue`. |
-| CI | Green on `main` (`2fae8c9`): lint, `nuxt typecheck`, unit tests, build, `pnpm audit --audit-level=high`, backend ruff/mypy/pytest, Docker build, CodeQL. |
-| Dependencies | `pnpm audit` and `pip-audit` report 0 advisories. Dependabot runs monthly with grouped minor/patch updates. |
+| CI | lint, `nuxt typecheck`, unit tests, build, `pnpm audit --audit-level=high`, backend ruff/mypy/pytest, Docker build, CodeQL. All green with #93. |
+| Dependencies | After #93: `pip-audit` is clean; `pnpm audit` shows 1 low plus 2 ignored highs with no patched release (see Known issues). Dependabot runs monthly with grouped minor/patch updates. |
 
-**In prod right now:** the site loads, but login and progress sync fail
-because `VITE_API_URL` still points at the dead Railway host.
+**In prod right now (2026-10-20):**
+- study.faustze.tech answers **404**. The Pages custom domain is empty
+  (`cname: null` in the Pages API) even though DNS still points at
+  `faustze.github.io`. Fix: Settings → Pages → Custom domain →
+  `study.faustze.tech`, then enable "Enforce HTTPS" once the certificate
+  is issued. With workflow-based Pages the repo's `CNAME` file is not
+  used, so the domain lives only in settings.
+- The nightly bot fails because the `BOT_PAT` secret expired (see Known
+  issues). Regenerate it.
+- Login and progress sync fail because `VITE_API_URL` still points at the
+  dead Railway host.
 
 ### How to verify the project locally
 
@@ -57,17 +66,13 @@ Ordered by priority.
      behind a trusted reverse proxy, so tighten it for the new setup.
    - Constraint: everything must fit a ~1 GB free-tier-sized box. The pool
      size is already small (3 + 2 overflow).
-2. **Upgrade vue-i18n 9 → 11.** Verified safe on 2026-09-29: typecheck,
-   lint, tests and `generate` pass, and all 308 keys in both locales render
-   identically on v9 and v11. The dependabot PR (#64) is gone, so run
-   `pnpm add vue-i18n@^11` by hand.
-3. **Nuxt migration Phase 2–4** (`docs/MIGRATION.md`): `@nuxtjs/i18n`,
+2. **Nuxt migration Phase 2–4** (`docs/MIGRATION.md`): `@nuxtjs/i18n`,
    `runtimeConfig` instead of `VITE_API_URL`, `defineVitestConfig`, then SSG
    (Phase 4) for SEO on topic pages.
-4. **shadcn-vue**: only after Nuxt SSG is stable, one component per PR.
+3. **shadcn-vue**: only after Nuxt SSG is stable, one component per PR.
    The owner wants to write some components by hand, so suggest rather than
    bulk-generate.
-5. Enable Twitch/Discord login (credentials plus un-hiding the buttons).
+4. Enable Twitch/Discord login (credentials plus un-hiding the buttons).
 
 ---
 
@@ -98,16 +103,28 @@ Ordered by priority.
 - **e2e (Playwright) does not run in CI**, and `frontend/e2e/auth.spec.ts`
   ("handles OAuth callback") is stale: it passes `?code=` without `state`,
   while the callback now reads the URL fragment.
-- Unmet peer dependency: `@nuxt/test-utils@4` wants `jsdom >= 27.4`, but
-  26.x is installed.
-- **TypeScript 7 is blocked**: vue-tsc (3.3.11 at the time) needs the JS API
-  that TS 7 dropped (`ERR_PACKAGE_PATH_NOT_EXPORTED ./lib/tsc`). TS majors
-  are ignored in `.github/dependabot.yml`. Revisit when vue-tsc supports TS 7.
+- **TypeScript 7 is blocked**: vue-tsc needs the JS API that TS 7 dropped
+  (`ERR_PACKAGE_PATH_NOT_EXPORTED ./lib/tsc`). Still true with vue-tsc
+  3.3.13 (re-checked 2026-10-20). TS majors are ignored in
+  `.github/dependabot.yml`. Revisit when vue-tsc supports TS 7.
 - pnpm enforces `minimumReleaseAge`: very fresh dependabot versions fail CI
   with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION`. Wait a day and re-run.
   Nothing is broken in that case.
-- The transitive security `overrides` in `pnpm-workspace.yaml` should be
-  removed once the parent packages ship the fixed versions.
+- `pnpm-workspace.yaml` → `auditConfig.ignoreGhsas` silences two advisories
+  that have no patched release: braces ≤ 3.0.3 (GHSA-vfj7-8cjw-p6xm, via
+  nitropack) and node-forge ≤ 1.4.0 (GHSA-86w9-cpqp-85rv, via @nuxt/cli).
+  Both are build/dev tooling only. Drop each entry once a fix ships.
+- **`BOT_PAT` expires.** It is a fine-grained PAT (90 days by default); the
+  first one died on 2026-10-07 and the nightly bot failed at checkout from
+  then on. The bot workflows now fail early with a clear "BOT_PAT is missing
+  or expired" error. When regenerating it, pick a longer expiry and set a
+  reminder. The alternative is the Claude GitHub App (OIDC, no PAT).
+- authlib ≥ 1.8 prefers `httpx2` and falls back to `httpx` with an
+  `AuthlibDeprecationWarning`. Add `httpx2` to `requirements.txt` before
+  authlib drops the fallback.
+- `requires-python = ">=3.10"` holds back sqlalchemy 2.1 and
+  pydantic-settings 2.16 (both need 3.11). CI and Docker already use 3.12,
+  so raising the floor is cheap when needed.
 
 ### Housekeeping
 - `frontend/public/mockServiceWorker.js` is shipped in the production build.
@@ -133,10 +150,31 @@ Ordered by priority.
 | 2026-09-29 | The OAuth callback passes the token in the URL fragment | Keeps the JWT out of server logs and `Referer`. |
 | 2026-09-29 | Dependabot monthly and grouped; TS majors ignored | The project is frozen, so there is less PR noise. |
 | 2026-09-29 | Railway dropped; the future backend is a self-run Docker service | The trial ended. |
+| 2026-10-20 | Unfixable build-time advisories are ignored by GHSA id, not by lowering `--audit-level` | New high/critical advisories still fail CI. |
+| 2026-10-20 | Transitive `overrides` removed | A fresh resolve already picks the fixed versions, so the overrides only added maintenance. |
 
 ---
 
 ## Session log
+
+### 2026-10-20 — dependency refresh, broken bot and site
+
+- Investigated the failing "Bot scheduled" run: `BOT_PAT` expired after 90
+  days (created 2026-07-09, last green run 2026-10-07). It needs a new
+  token. #93 adds a preflight step that names the problem.
+- Found study.faustze.tech returning 404: the Pages custom domain is empty
+  in the repo settings. Not fixed from code; see the status snapshot.
+- `pnpm audit` had grown to 23 advisories (3 critical, 13 high), so CI
+  would block every frontend PR and therefore every deploy. pip-audit
+  flagged 14 in PyJWT.
+- **#93** refreshed all npm deps (including vue-i18n 11, vitest 5, jsdom 30
+  and msw 3), dropped the overrides, bumped the Python pins and all actions,
+  and superseded dependabot PRs #69, #73, #75, #81, #87, #88, #89, #90 and
+  #92.
+- Verified #93 beyond CI: Playwright smoke test of the generated site; the
+  MSW 3 worker in dev; the Docker image against Postgres 16 (migrations
+  both ways, OAuth start, auth and progress endpoints, CORS, parallel
+  completes).
 
 ### 2026-09-29 — audit, fixes, freeze
 
