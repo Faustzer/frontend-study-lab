@@ -3,7 +3,7 @@ import { server } from '@/mocks/server'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }))
+beforeAll(() => server.listen({ onUnhandledFrame: 'bypass' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 

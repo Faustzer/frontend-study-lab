@@ -1,18 +1,19 @@
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
-  msw: true
+  # msw 3 has no install script; pnpm still flags it, so opt out explicitly
+  msw: false
 onlyBuiltDependencies:
   - "@parcel/watcher"
   - esbuild
-  - msw
-# Transitive security patches, each kept within its current major.
-# Drop an entry once the parent package ships the fixed version.
-overrides:
-  "brace-expansion@2": "^2.1.4"
-  "brace-expansion@5": "^5.0.9"
-  "joi@18": "^18.2.5"
-  "nanoid@3": "^3.3.18"
-  "postcss@8": "^8.5.23"
-  "svgo@4": "^4.1.0"
-  "tar@7": "^7.5.21"
+# Advisories with no patched release yet. Both packages only run at build
+# or dev time inside Nuxt tooling and never ship in the static site.
+# Drop an entry once a fixed version is published.
+auditConfig:
+  ignoreGhsas:
+    # braces <=3.0.3 (via nitropack): DoS on deeply nested glob patterns;
+    # the patterns come from our own build config, not user input
+    - GHSA-vfj7-8cjw-p6xm
+    # node-forge <=1.4.0 (via @nuxt/cli, nitropack): lax RSA signature
+    # verification; only used to make self-signed dev certificates
+    - GHSA-86w9-cpqp-85rv

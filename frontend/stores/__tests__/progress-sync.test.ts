@@ -68,7 +68,7 @@ function loginAs(user: User) {
   auth.setSession('test-token', user)
 }
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }))
+beforeAll(() => server.listen({ onUnhandledFrame: 'bypass' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
